@@ -1,5 +1,6 @@
 ﻿using System;
 using StateNS;
+using TypesNS;
 
 namespace MiniChess
 {

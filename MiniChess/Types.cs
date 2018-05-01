@@ -1,6 +1,6 @@
 using System;
 
-namespace StateNS
+namespace TypesNS
 {
     class Types
     {
