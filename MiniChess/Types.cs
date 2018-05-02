@@ -4,12 +4,12 @@ namespace TypesNS
 {
     class Types
     {
-        public static char KING = 'K';
-        public static char QUEEN = 'Q';
-        public static char ROOK = 'T';
-        public static char BISHOP = 'B';
-        public static char PAWN = 'P';
-        public static char EMPTY = '0';
+        public const char KING = 'K';
+        public const char QUEEN = 'Q';
+        public const char ROOK = 'T';
+        public const char BISHOP = 'B';
+        public const char PAWN = 'P';
+        public const char EMPTY = '0';
 
         public static bool isPlayer1(char piece){
             return Char.IsUpper(piece);
@@ -29,6 +29,9 @@ namespace TypesNS
         }
         public static char getPlayer2Piece(char piece){
             return Char.ToLower(piece);
+        }
+        public static char getPlayer1Piece(char piece){
+            return Char.ToUpper(piece);
         }
     }
 }
