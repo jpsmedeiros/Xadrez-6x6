@@ -7,15 +7,34 @@ namespace MiniChess
     class Program
     {
         public static int currentPlayer;
+        private static bool game;
         static void Main(string[] args)
         {
-            currentPlayer = 1;
+            char[,] board = initializeGame();
+            String input = "";
+            do{
+                Console.WriteLine("Digite:\n 1- Jogar\n 2- Ajuda\n 3- Creditos\n 4- Sair\n");
+                input = Console.ReadLine();
+            } while(handleOptionInput(input));
 
-            char[,] board = initializeBoard();
+            while(game){
+                Console.WriteLine("Movimente sua peça:\n");
+                input = Console.ReadLine();
+                Console.WriteLine(handleMovementInput(input)[2]);
+                input = "";
+                game = false;
+            }
             //int cp = 1;
             //int[] lm = { 3, 2, 3, 3 };
             //State inicial = new State(board, cp, lm);
             printBoard(board);
+        }
+        
+        public static char[,] initializeGame(){
+            Console.Clear();
+            currentPlayer = 1;
+            game = true;
+            return initializeBoard();
         }
         public static char[,] initializeBoard()
         {
@@ -31,6 +50,37 @@ namespace MiniChess
             }
             fillPieces(board);
             return board;
+        }
+
+        public static bool handleOptionInput(String input){
+            try{
+                int option = Int32.Parse(input);
+                switch(option){
+                    case 1:
+                        return false;
+                    case 2:
+                        Console.WriteLine("Bem vindo ao Xadrez 6x6\nPara movimentar sua peça digite seu movimento no formato: x1 y1 x2 y2\n"+
+                         "(Ex: 2 4 1 2) onde os dois primeiros números são as coordendas iniciais da peça que deseja mover, e os seguintes"+ 
+                         "as coordenadas finais.\n\nBom jogo!\n\n");
+                        return true;
+                    case 3:
+                        Console.WriteLine("TODO");
+                        return true;
+                    case 4:
+                        game = false;
+                        return false;
+                }
+            }catch(System.FormatException){
+                Console.WriteLine("Opção inválida");
+                return true;
+            }
+            return false;
+            
+        }
+        public static string[] handleMovementInput(String input){
+            string[] answer;
+            answer = input.Split(" ");
+            return answer;
         }
 
         public static char[,] fillPieces(char[,] board){//prenche as peças nas suas posições iniciais do jogo
