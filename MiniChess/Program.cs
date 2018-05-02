@@ -6,8 +6,10 @@ namespace MiniChess
 {
     class Program
     {
+        public static int currentPlayer;
         static void Main(string[] args)
         {
+            currentPlayer = 1;
 
             char[,] board = initializeBoard();
             //int cp = 1;
@@ -56,7 +58,7 @@ namespace MiniChess
             return board;
         }
         public static void printBoard(char[,] board){
-            Console.WriteLine($"Current Player:");//TODO Adicionar jogador atual
+            Console.WriteLine($"Current Player: {currentPlayer}");//TODO Adicionar jogador atual
             Console.WriteLine("     Board");
             int size = board.GetLength(0);
             Console.Write($"  1 2 3 4 5 6\n");
@@ -70,9 +72,11 @@ namespace MiniChess
             }
             Console.Write($"  1 2 3 4 5 6\n");
         }
-
         public static char player2Piece(char piece){
             return Char.ToLower(piece);
+        }
+        public int getCurrentPlayer(){
+            return currentPlayer;
         }
     }
 }
