@@ -10,16 +10,18 @@ namespace MiniChess
         private static bool game;
 
         public static char[,] board;
+        public static Types types = new Types();
         static void Main(string[] args)
         {
             board = initializeGame();
             menuInterface();
 
             while(game){
+                printBoard(board);
                 movementInterface();
+                printBoard(board);
                 game = false;
             }
-            printBoard(board);
         }
         
         public static char[,] initializeGame(){
@@ -96,7 +98,7 @@ namespace MiniChess
             int[] coordinates = new int[4];
             try{
                 for(int i=0;i<answer.Length;i++){
-                        coordinates[i] = Int32.Parse(answer[i]);
+                        coordinates[i] = Int32.Parse(answer[i])-1;
                 }
             }catch(System.FormatException){
                 Console.WriteLine("Movimento em formato incorreto, tente digitar apenas números separados por espaços\n");
@@ -107,20 +109,21 @@ namespace MiniChess
         }
 
         public static void movePiece(int[] coordinates){
-            
+            char piece = board[coordinates[0], coordinates[1]];
+            board[coordinates[0], coordinates[1]] = types.EMPTY;
+            board[coordinates[2], coordinates[3]] = piece;
         }
 
         public static char[,] fillPieces(char[,] board){//prenche as peças nas suas posições iniciais do jogo
             int lin, col;
             int tamanho = board.GetLength(0);
-            Types types = new Types();
             lin = 1;
             for(col = 0; col < tamanho; col++){
-                board[lin, col] = 'P';
+                board[lin, col] = types.PAWN;
             }
             lin = 4;
             for(col = 0; col < tamanho; col++){
-                board[lin, col] = 'p';
+                board[lin, col] = player2Piece(types.PAWN);
             }
             //Jogador 1
             board[0, 0] = board[0, 5] = types.ROOK; // TORRE
