@@ -9,8 +9,6 @@ namespace MiniChess
     {
         public static int currentPlayer;
         private static bool game;
-        private static bool error;
-        private static String errorMsg;
         public static char[,] board;
         public static Types types = new Types();
         static void Main(string[] args)
@@ -22,7 +20,6 @@ namespace MiniChess
                 printBoard(board);
                 movementInterface();
                 printBoard(board);
-                game = false;
             }
         }
         
@@ -105,8 +102,9 @@ namespace MiniChess
             }catch(System.FormatException){
                 Console.WriteLine("Movimento em formato incorreto, tente digitar apenas números separados por espaços\n");
             }
-            //TODO Consultar máquina de regras if(ruleMachine.verify(answer, currentPlayer)) ... 
-            RuleMachine.validateMove(coordinates, board, currentPlayer);//HOMENS TRABALHANDO CUIDADO
+            if(!RuleMachine.validateMove(coordinates, board, currentPlayer)){
+                return true; //HOMENS TRABALHANDO CUIDADO   
+            }
             movePiece(coordinates);
             return false;
         }
@@ -115,6 +113,7 @@ namespace MiniChess
             char piece = board[coordinates[0], coordinates[1]];
             board[coordinates[0], coordinates[1]] = Types.EMPTY;
             board[coordinates[2], coordinates[3]] = piece;
+            changeCurrentPlayer();
         }
 
         public static char[,] fillPieces(char[,] board){//prenche as peças nas suas posições iniciais do jogo
@@ -160,7 +159,15 @@ namespace MiniChess
         }
         public static void errorHandler(String msg){
             //TODO implementar exibição de erro
-            Console.WriteLine(errorMsg);
+            Console.WriteLine(msg);
+        }
+
+        public static void changeCurrentPlayer(){
+            if(currentPlayer == 1){
+                currentPlayer = 2;
+                return;
+            }   
+            currentPlayer = 1;
         }
     }
 }

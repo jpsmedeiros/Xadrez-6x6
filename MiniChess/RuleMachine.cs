@@ -8,6 +8,7 @@ namespace RuleMachineNS
     {
         public static bool validateMove(int[] coordinates, char[,] board, int currentPlayer){
             char piece = board[coordinates[0], coordinates[1]];
+            Console.WriteLine("PEÇA SENDO AVALIADA: "+piece);
             if(Types.isEmpty(piece)){
                 Program.errorHandler("Casa vazia, tente selecionar outra casa");
                 return false;
