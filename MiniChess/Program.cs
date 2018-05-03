@@ -111,6 +111,9 @@ namespace MiniChess
 
         public static void movePiece(int[] coordinates){
             char piece = board[coordinates[0], coordinates[1]];
+            if(RuleMachine.isAttackMove(coordinates, board)){
+                capture(coordinates, board);
+            }
             board[coordinates[0], coordinates[1]] = Types.EMPTY;
             board[coordinates[2], coordinates[3]] = piece;
             changeCurrentPlayer();
@@ -167,6 +170,9 @@ namespace MiniChess
                 return;
             }   
             currentPlayer = 1;
+        }
+        public static void capture(int[] coordinates, char[,] board){
+            Program.messageHandler("Peça capturada na Linha: "+coordinates[2]+" Coluna: "+coordinates[3]+" Peça capturada: "+board[coordinates[2], coordinates[3]]);
         }
     }
 }

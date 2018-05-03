@@ -55,10 +55,24 @@ namespace RuleMachineNS
             /*
             The king piece can move one single square in any direction.
             The king cannot move onto a square that is currently occupied by a piece from its own team.
-            The king piece cannot move to any square that puts them into a "check" position.
-            The king piece can participate in a move known as "castling", where the piece can move up to three squares while exchanging places with a rook chess piece.
-             */
-            return false;//TODO
+            **The king piece cannot move to any square that puts them into a "check" position.
+            */
+            int linInicial, colInicial, linFinal, colFinal;
+            linInicial = coordinates[0];
+            colInicial = coordinates[1];
+            linFinal = coordinates[2];
+            colFinal = coordinates[3];
+
+            int movedLines = Math.Abs(linFinal - linInicial);
+            int movedColumns = Math.Abs(colFinal - colInicial);
+            if(movedLines < 2 && movedColumns < 2) {
+                return true;
+            }else{
+                Program.messageHandler("Movimento inválido para o Rei. Movimento maior que o possível.");
+                return false;
+            }
+            
+            return isCheck();//TODO
         }
         public static bool isValidForQueen(char piece, int[] coordinates, char[,] board){
             /*
@@ -73,7 +87,6 @@ namespace RuleMachineNS
             The rook piece can move forward, backward, left or right at any time.
             The rook piece can move anywhere from 1 to 5 squares in any direction, so long as it is not obstructed by any other piece.
              */
-            bool isAttack = isAttackMove(coordinates, board);
             int lin,col;
             int linInicial, colInicial, linFinal, colFinal;
             int moveOne;
@@ -99,9 +112,6 @@ namespace RuleMachineNS
                         return false;
                     }
                 }
-                if(isAttack){
-                    capture(coordinates[2], coordinates[3], board);
-                }
                 return true;
             }
             if(colInicial != colFinal){
@@ -112,9 +122,6 @@ namespace RuleMachineNS
                         Program.messageHandler("Movimento inválido para a Torre. Existe outra peça no caminho.");
                         return false;
                     }
-                }
-                if(isAttack){
-                    capture(coordinates[2], coordinates[3], board);
                 }
                 return true;
             }
@@ -149,8 +156,6 @@ namespace RuleMachineNS
             }
             if(isAttack){
                 if((coordinates[2] == coordinates[0]+moveOne) && ((coordinates[3] == coordinates[1]+1) || (coordinates[3] == coordinates[1]-1))){
-                    capture(coordinates[2], coordinates[3], board);
-                    //Program.messageHandler("Peça capturada na Linha: "+coordinates[2]+" Coluna: "+coordinates[3]+" Peça capturada: "+board[coordinates[2], coordinates[3]]);
                     return true;//é movimento de ataque válido, capturou uma peça
                 }else{
                     Program.messageHandler("Movimento inválido para o peão. Movimento de ataque inválido.");
@@ -176,9 +181,8 @@ namespace RuleMachineNS
             char piece = board[coordinates[2], coordinates[3]];
             return !Types.isEmpty(piece);
         }
-
-        public static void capture(int lin, int col, char[,] board){
-            Program.messageHandler("Peça capturada na Linha: "+lin+" Coluna: "+col+" Peça capturada: "+board[lin, col]);
+        public static bool isCheck(){
+            return false;
         }
     }
 }
