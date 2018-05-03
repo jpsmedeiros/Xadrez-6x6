@@ -19,7 +19,7 @@ namespace MiniChess
             while(game){
                 printBoard(board);
                 movementInterface();
-                printBoard(board);
+                //se acabar o jogo na rodada printar o tabuleiro depois da movimentação
             }
         }
         
@@ -157,8 +157,7 @@ namespace MiniChess
         public int getCurrentPlayer(){
             return currentPlayer;
         }
-        public static void errorHandler(String msg){
-            //TODO implementar exibição de erro
+        public static void messageHandler(String msg){
             Console.WriteLine(msg);
         }
 
