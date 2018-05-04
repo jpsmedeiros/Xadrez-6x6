@@ -201,7 +201,6 @@ namespace MiniChess
             foreach (char piece in board){
                 bool is_king = Types.getPlayer1Piece(piece) == Types.KING;
                 int player = Types.getPiecePlayer(piece);
-
                 if (is_king) return player;
             }
             return -1;
