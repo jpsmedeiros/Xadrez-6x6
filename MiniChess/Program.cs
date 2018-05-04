@@ -1,6 +1,7 @@
 ﻿using System;
 using StateNS;
 using TypesNS;
+using RuleMachineNS;
 
 namespace MiniChess
 {
@@ -8,7 +9,6 @@ namespace MiniChess
     {
         public static int currentPlayer;
         private static bool game;
-
         public static char[,] board;
         public static Types types = new Types();
         static void Main(string[] args)
@@ -19,8 +19,7 @@ namespace MiniChess
             while(game){
                 printBoard(board);
                 movementInterface();
-                printBoard(board);
-                game = false;
+                //se acabar o jogo na rodada printar o tabuleiro depois da movimentação
             }
         }
         
@@ -103,15 +102,21 @@ namespace MiniChess
             }catch(System.FormatException){
                 Console.WriteLine("Movimento em formato incorreto, tente digitar apenas números separados por espaços\n");
             }
-            //TODO Consultar máquina de regras if(ruleMachine.verify(answer, currentPlayer)) ... 
+            if(!RuleMachine.validateMove(coordinates, board, currentPlayer)){
+                return true; //HOMENS TRABALHANDO CUIDADO   
+            }
             movePiece(coordinates);
             return false;
         }
 
         public static void movePiece(int[] coordinates){
             char piece = board[coordinates[0], coordinates[1]];
-            board[coordinates[0], coordinates[1]] = types.EMPTY;
+            if(RuleMachine.isAttackMove(coordinates, board)){
+                capture(coordinates, board);
+            }
+            board[coordinates[0], coordinates[1]] = Types.EMPTY;
             board[coordinates[2], coordinates[3]] = piece;
+            changeCurrentPlayer();
         }
 
         public static char[,] fillPieces(char[,] board){//prenche as peças nas suas posições iniciais do jogo
@@ -119,22 +124,22 @@ namespace MiniChess
             int tamanho = board.GetLength(0);
             lin = 1;
             for(col = 0; col < tamanho; col++){
-                board[lin, col] = types.PAWN;
+                board[lin, col] = Types.PAWN;
             }
             lin = 4;
             for(col = 0; col < tamanho; col++){
-                board[lin, col] = player2Piece(types.PAWN);
+                board[lin, col] = Types.getPlayer2Piece(Types.PAWN);
             }
             //Jogador 1
-            board[0, 0] = board[0, 5] = types.ROOK; // TORRE
-            board[0, 1] = board[0, 4] = types.BISHOP; // BISPO
-            board[0, 2] = types.QUEEN;
-            board[0, 3] = types.KING;
+            board[0, 0] = board[0, 5] = Types.ROOK; // TORRE
+            board[0, 1] = board[0, 4] = Types.BISHOP; // BISPO
+            board[0, 2] = Types.QUEEN;
+            board[0, 3] = Types.KING;
             //Jogador 2
-            board[5, 0] = board[5, 5] = player2Piece(types.ROOK);
-            board[5, 1] = board[5, 4] = player2Piece(types.BISHOP);
-            board[5, 2] = player2Piece(types.KING);
-            board[5, 3] = player2Piece(types.QUEEN);
+            board[5, 0] = board[5, 5] = Types.getPlayer2Piece(Types.ROOK);
+            board[5, 1] = board[5, 4] = Types.getPlayer2Piece(Types.BISHOP);
+            board[5, 2] = Types.getPlayer2Piece(Types.KING);
+            board[5, 3] = Types.getPlayer2Piece(Types.QUEEN);
             return board;
         }
         public static void printBoard(char[,] board){
@@ -152,11 +157,22 @@ namespace MiniChess
             }
             Console.Write($"  1 2 3 4 5 6\n");
         }
-        public static char player2Piece(char piece){
-            return Char.ToLower(piece);
-        }
         public int getCurrentPlayer(){
             return currentPlayer;
+        }
+        public static void messageHandler(String msg){
+            Console.WriteLine(msg);
+        }
+
+        public static void changeCurrentPlayer(){
+            if(currentPlayer == 1){
+                currentPlayer = 2;
+                return;
+            }   
+            currentPlayer = 1;
+        }
+        public static void capture(int[] coordinates, char[,] board){
+            Program.messageHandler("Peça capturada na Linha: "+coordinates[2]+" Coluna: "+coordinates[3]+" Peça capturada: "+board[coordinates[2], coordinates[3]]);
         }
     }
 }

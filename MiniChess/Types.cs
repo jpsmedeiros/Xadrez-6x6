@@ -4,29 +4,34 @@ namespace TypesNS
 {
     class Types
     {
-        public char KING = 'K';
-        public char QUEEN = 'Q';
-        public char ROOK = 'T';
-        public char BISHOP = 'B';
-        public char PAWN = 'P';
-        public char EMPTY = '0';
+        public const char KING = 'K';
+        public const char QUEEN = 'Q';
+        public const char ROOK = 'T';
+        public const char BISHOP = 'B';
+        public const char PAWN = 'P';
+        public const char EMPTY = '0';
 
-        public bool isPlayer1(char piece){
+        public static bool isPlayer1(char piece){
             return Char.IsUpper(piece);
         }
-        public bool isPlayer2(char piece){
+        public static bool isPlayer2(char piece){
             return Char.IsLower(piece);
         }
-        public bool isPlayer(char piece, int player){
-            if(player == 1){
+        public static bool isPlayerX(char piece, int player){
+            if(player == 1)
                 return isPlayer1(piece);
-            }
             return isPlayer2(piece);
         }
-        public bool isEmpty(char piece){
+        public static bool isEmpty(char piece){
             if(piece == EMPTY)
                 return true;
             else return false;
+        }
+        public static char getPlayer2Piece(char piece){
+            return Char.ToLower(piece);
+        }
+        public static char getPlayer1Piece(char piece){
+            return Char.ToUpper(piece);
         }
     }
 }
