@@ -10,6 +10,8 @@ namespace MiniChess
         public static int currentPlayer;
         private static bool game;
         public static char[,] board;
+
+        private static bool messageHandlerActive = true;
         public static Types types = new Types();
         static void Main(string[] args)
         {
@@ -162,7 +164,13 @@ namespace MiniChess
             return currentPlayer;
         }
         public static void messageHandler(String msg){
-            Console.WriteLine(msg);
+            if(messageHandlerActive){
+                Console.WriteLine(msg);
+            }
+        }
+
+        public static void activateOrDeactivateMessageHandler(){
+            messageHandlerActive = !messageHandlerActive;
         }
 
         public static void changeCurrentPlayer(){

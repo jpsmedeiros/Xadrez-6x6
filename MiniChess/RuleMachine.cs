@@ -201,6 +201,7 @@ namespace RuleMachineNS
             size = board.GetLength(0);
             int contador = 0;
             int contador2 = 0;
+            Program.activateOrDeactivateMessageHandler();
             for(lin1 = 0 ; lin1 < size ; lin1++){//pega todas as peças do jogador
                 for(col1 = 0; col1 < size; col1++){
                     currentPiece = board[lin1, col1];
@@ -220,6 +221,7 @@ namespace RuleMachineNS
                     }
                 }
             }
+            Program.activateOrDeactivateMessageHandler();
             Console.WriteLine("CONTADOR: " +contador);
             Console.WriteLine("QTD JOGADAS POSSIVEIS: "+contador2);
             return moves;
