@@ -159,42 +159,24 @@ namespace RuleMachineNS
                 else moveY = -1;
             }
 
-            //Console.WriteLine("MEU MOVEX: "+moveX);
-            //Console.WriteLine("MEU MOVEY: "+moveY);
-
             int auxX = 0, auxY = 0;
-            lin = linInicial+moveX; //3+1
-            col = colInicial+moveY; //4+1
-            while((lin != linFinal+moveX) && (col != colFinal+moveY)){ // x6 y6
-                auxX++;
-                auxY++;
+            lin = linInicial;
+            col = colInicial;
+            while(true){
+                lin += moveX;
+                if(lin != linFinal) auxX++;
+                col += moveY;
+                if(col != colFinal) auxY++;
+                if((lin == linFinal) && (col == colFinal)) return true;
+                if((lin == linFinal) || (col == colFinal)){
+                    Program.messageHandler("Movimento inválido para o Bispo. São permitidos somente movimentos nas diagonais.");
+                    return false;
+                }
                 char currentPiece = board[lin, col];
                 if(!Types.isEmpty(currentPiece) && ((col != colFinal) || (lin != linFinal))){
                     Program.messageHandler("Movimento inválido para o Bispo. Existe outra peça no caminho.");
                     return false;
                 }
-                lin += moveX;
-                col += moveY;
-            }
-
-            /*for(lin = linInicial+moveX; lin != linFinal+moveX; lin+=moveX){
-                auxX++;
-                for(col = colInicial+moveY; col != colFinal+moveY; col+=moveY){
-                    auxY++;
-                    char currentPiece = board[lin, col];
-                    if(!Types.isEmpty(currentPiece) && ((col != colFinal) || (lin != linFinal))){
-                        Program.messageHandler("Movimento inválido para o Bispo. Existe outra peça no caminho.");
-                        return false;
-                    }
-                }
-            }*/
-
-            //Console.WriteLine("AUXX: "+auxX);
-            //Console.WriteLine("AUXY: "+auxY);
-            if(auxX == auxY) return true; //se auxX == auxY, significa que fez a mesma quantidade de movimento na vertical e na horizontal, ou seja, manteve-se na diagonal
-            else{
-                Program.messageHandler("Movimento inválido para o Bispo. São permitidos somente movimentos nas diagonais.");
-                return false;
             }
 
             Program.messageHandler("ERRO: Movimento inválido para o Bispo. MOVIMENTO NÃO TRATADO.");
