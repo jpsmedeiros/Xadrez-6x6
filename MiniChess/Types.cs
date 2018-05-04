@@ -33,5 +33,8 @@ namespace TypesNS
         public static char getPlayer1Piece(char piece){
             return Char.ToUpper(piece);
         }
+        public static int getPiecePlayer(char piece){
+            return isPlayer1(piece) ? 1 : 2;
+        }
     }
 }

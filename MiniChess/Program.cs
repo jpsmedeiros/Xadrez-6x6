@@ -13,25 +13,34 @@ namespace MiniChess
         public static char[,] board;
         private static bool messageHandlerActive = true;
         public static Types types = new Types();
+        
         static void Main(string[] args)
         {
-            board = initializeGame();
+            // configuração inicial do jogo
+            initializeGame();
+            board = initializeBoard();
             menuInterface();
 
+            // game loop
             while(game){
                 printBoard(board);
                 RuleMachine.possible_moves(board, currentPlayer);
                 movementInterface();
-                //se acabar o jogo na rodada printar o tabuleiro depois da movimentação
-            }
+                printBoard(board);
+            
+                if (gameIsOver(board)){
+                    Console.WriteLine("GAME OVER, player" + getWinner(board) + " ganhou a partida!");
+                    game = false;
+                };
+            }       
         }
         
-        public static char[,] initializeGame(){
+        public static void initializeGame(){
             Console.Clear();
             currentPlayer = 1;
             game = true;
-            return initializeBoard();
         }
+
         public static char[,] initializeBoard()
         {
             int lin, col, size;
@@ -200,6 +209,7 @@ namespace MiniChess
             board[5, 3] = Types.getPlayer2Piece(Types.QUEEN);
             return board;
         }
+
         public static void printBoard(char[,] board){
             Console.WriteLine($"Current Player: {currentPlayer}");//TODO Adicionar jogador atual
             Console.WriteLine("     Board");
@@ -215,6 +225,7 @@ namespace MiniChess
             }
             Console.Write($"  1 2 3 4 5 6\n");
         }
+
         public int getCurrentPlayer(){
             return currentPlayer;
         }
@@ -229,14 +240,34 @@ namespace MiniChess
         }
 
         public static void changeCurrentPlayer(){
-            if(currentPlayer == 1){
-                currentPlayer = 2;
-                return;
-            }   
-            currentPlayer = 1;
+            currentPlayer = currentPlayer == 1 ? 2 : 1;
+            return;
         }
+
         public static void capture(int[] coordinates, char[,] board){
             Program.messageHandler("Peça capturada na Linha: "+coordinates[2]+" Coluna: "+coordinates[3]+" Peça capturada: "+board[coordinates[2], coordinates[3]]);
+        }
+
+        public static char player2Piece(char piece){
+            return Char.ToLower(piece);
+        }
+
+        public static bool gameIsOver(char [,] board){
+            int number_of_kings = 0;
+            foreach (char piece in board)
+                if (Types.getPlayer1Piece(piece) == Types.KING) number_of_kings++;
+        
+            return number_of_kings < 2;
+        }
+
+        public static int getWinner(char [,] board){
+            // só retorna o correto caso o jogo já tenha acabado. (use gameIsOver)
+            foreach (char piece in board){
+                bool is_king = Types.getPlayer1Piece(piece) == Types.KING;
+                int player = Types.getPiecePlayer(piece);
+                if (is_king) return player;
+            }
+            return -1;
         }
     }
 }
