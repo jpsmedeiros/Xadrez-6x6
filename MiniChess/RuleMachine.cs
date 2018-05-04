@@ -161,7 +161,7 @@ namespace RuleMachineNS
             int auxX = 0, auxY = 0;
             lin = linInicial+moveX; //3+1
             col = colInicial+moveY; //4+1
-            while((lin != linFinal+moveX) && (col != colFinal+moveY)){ // 6 6
+            while((lin != linFinal+moveX) && (col != colFinal+moveY)){ // x6 y6
                 auxX++;
                 auxY++;
                 char currentPiece = board[lin, col];
