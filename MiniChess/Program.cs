@@ -9,7 +9,9 @@ namespace MiniChess
     {
         public static int currentPlayer;
         private static bool game;
+        public static int gameMode = 1;// default = 1: Player vs Player
         public static char[,] board;
+        private static bool messageHandlerActive = true;
         public static Types types = new Types();
         
         static void Main(string[] args)
@@ -22,6 +24,7 @@ namespace MiniChess
             // game loop
             while(game){
                 printBoard(board);
+                RuleMachine.possible_moves(board, currentPlayer);
                 movementInterface();
                 printBoard(board);
             
@@ -57,7 +60,7 @@ namespace MiniChess
         private static void menuInterface(){
             String input;
             do{
-                Console.WriteLine("Digite:\n 1- Jogar\n 2- Ajuda\n 3- Creditos\n 4- Sair\n");
+                Console.WriteLine("Digite:\n 1- Jogar\n 2- Opcoes\n 3- Ajuda\n 4- Creditos\n 5- Sair\n");
                 input = Console.ReadLine();
             } while(handleOptionInput(input));
         }
@@ -65,9 +68,61 @@ namespace MiniChess
         private static void movementInterface(){
             String input;
             do{
-                Console.WriteLine("Movimente sua peça:\n");
-                input = Console.ReadLine();
+                if(gameMode == 1){// P vs P => sem chamada a IA
+                    Console.WriteLine("Movimente sua peça:\n");
+                    input = Console.ReadLine();
+                }else if(gameMode == 2){// P vs IA => chama IA se currentPlayer == 2
+                    if(currentPlayer == 1){
+                        Console.WriteLine("Movimente sua peça:\n");
+                        input = Console.ReadLine();
+                    }else{
+                        //TODO
+                        Console.WriteLine("Esperando input da IA...");
+                        //CHAMA A IA
+                        //input = callIAAction(...);
+                        input = "0 0 0 0";//Só para tirar o erro
+                    }
+                }else{// IA vs IA => sempre chama a IA
+                    //TODO
+                    Console.WriteLine("Esperando input da IA " +currentPlayer +"...");
+                    //CHAMA A IA
+                    //input = callIAAction(...);
+                    input = "0 0 0 0";//Só para tirar o erro
+                }
+
             }while(handleMovementInput(input));
+        }
+
+        public static void modeInterface(){
+            String input;
+            do{
+                Console.WriteLine("Digite:\n 1- Player vs Player\n 2- Player vs IA\n 3- IA vs IA\n");
+                input = Console.ReadLine();
+            }while(handleModeInput(input));
+        }
+        public static bool handleModeInput(string input){
+                        try{
+                int option = Int32.Parse(input);
+                switch(option){
+                    case 1:
+                    //Player vs Player
+                        gameMode = 1;
+                        return false;
+                    case 2:
+                    //Player vs IA
+                        gameMode = 2;
+                        return false;
+                    case 3:
+                    //IA vs IA
+                        gameMode = 3;
+                        return false;
+                }
+            }catch(System.FormatException){
+                Console.WriteLine("Opção inválida");
+                return true;
+            }
+            Console.WriteLine("Opção inválida");
+            return true;
         }
 
         public static bool handleOptionInput(String input){
@@ -77,14 +132,17 @@ namespace MiniChess
                     case 1:
                         return false;
                     case 2:
+                        modeInterface();//modo de jogo
+                        return true;
+                    case 3:
                         Console.WriteLine("Bem vindo ao Xadrez 6x6\nPara movimentar sua peça digite seu movimento no formato: x1 y1 x2 y2\n"+
                          "(Ex: 2 4 1 2) onde os dois primeiros números são as coordendas iniciais da peça que deseja mover, e os seguintes"+ 
                          "as coordenadas finais.\n\nBom jogo!\n\n");
                         return true;
-                    case 3:
+                    case 4:
                         Console.WriteLine("TODO");
                         return true;
-                    case 4:
+                    case 5:
                         game = false;
                         return false;
                 }
@@ -172,7 +230,13 @@ namespace MiniChess
             return currentPlayer;
         }
         public static void messageHandler(String msg){
-            Console.WriteLine(msg);
+            if(messageHandlerActive){
+                Console.WriteLine(msg);
+            }
+        }
+
+        public static void activateOrDeactivateMessageHandler(){
+            messageHandlerActive = !messageHandlerActive;
         }
 
         public static void changeCurrentPlayer(){

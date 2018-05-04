@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TypesNS;
 using MiniChess;
 
@@ -7,7 +8,6 @@ namespace RuleMachineNS
     class RuleMachine
     {
         public static bool validateMove(int[] coordinates, char[,] board, int currentPlayer){
-            //TODO verificar se não ta comendo peça do próprio jogador
             for(int i=0;i<coordinates.Length;i++){
                 int atual = coordinates[i]+1;
                 if(atual > 6 || atual < 1){
@@ -17,13 +17,18 @@ namespace RuleMachineNS
                 }
             }
             char piece = board[coordinates[0], coordinates[1]];
-            Console.WriteLine("PEÇA SENDO AVALIADA: " + piece);
+            Console.WriteLine("PEÇA SENDO AVALIADA: "+piece);
             if(Types.isEmpty(piece)){
                 Program.messageHandler("Casa vazia, tente selecionar outra casa");
                 return false;
             }
             if(!Types.isPlayerX(piece, currentPlayer)){
                 Program.messageHandler("Peça não pertence ao jogador atual, tente mover uma outra peça");
+                return false;
+            }
+            char destination = board[coordinates[2], coordinates[3]];
+            if(Types.isPlayerX(destination, currentPlayer)){
+                Program.messageHandler("Peça pertence ao jogador atual, não pode capturar");
                 return false;
             }
             if((coordinates[0] == coordinates[2]) && coordinates[1] == coordinates[3]){
@@ -45,7 +50,6 @@ namespace RuleMachineNS
                 case Types.BISHOP:
                     return isValidForBishop(piece, coordinates, board);
                 case Types.PAWN:
-                    Console.WriteLine("Verificando para peão");
                     return isValidForPawn(piece, coordinates, board, currentPlayer);
                 default:
                     return false;
@@ -80,7 +84,56 @@ namespace RuleMachineNS
             The queen cannot "jump" over any piece on the board, so its movements are restricted to any direction of unoccupied squares.
             The queen can be used to capture any of your opponent's pieces on the board.
              */
-            return false;//TODO
+            int lin,col;
+            int linInicial, colInicial, linFinal, colFinal;
+            linInicial = coordinates[0];
+            colInicial = coordinates[1];
+            linFinal = coordinates[2];
+            colFinal = coordinates[3];
+            string name = "a Rainha";
+            if((linInicial != linFinal) && (colInicial != colFinal)) return isValidDiagonal(piece, coordinates, board, name);
+            else return isValidHorizontalVertical(piece, coordinates, board, name);
+            /*
+            Program.messageHandler("ERRO: Movimento inválido para a Rainha. MOVIMENTO NÃO TRATADO.");
+            return false;//TODO*/
+        }
+        public static bool isValidHorizontalVertical(char piece, int[] coordinates, char[,] board, string pieceName){
+            int lin,col;
+            int linInicial, colInicial, linFinal, colFinal;
+            int moveOne;
+            linInicial = coordinates[0];
+            colInicial = coordinates[1];
+            linFinal = coordinates[2];
+            colFinal = coordinates[3];
+
+            if((linInicial < linFinal) || (colInicial < colFinal)){
+                moveOne = 1;
+            }else{
+                moveOne = -1;
+            }
+            if(linInicial != linFinal){
+                for(lin = linInicial+moveOne; lin != linFinal+moveOne; lin=lin+moveOne){
+                    char currentPiece = board[lin, colInicial];
+                    if(!Types.isEmpty(currentPiece) && (lin != linFinal)){
+                        Program.messageHandler("Movimento inválido para "+pieceName+". Existe outra peça no caminho.");
+                        return false;
+                    }
+                }
+                return true;
+            }
+            if(colInicial != colFinal){
+                for(col = colInicial+moveOne; col != colFinal+moveOne; col=col+moveOne){
+                    char currentPiece = board[linInicial, col];
+                    if(!Types.isEmpty(currentPiece) && (col != colFinal)){
+                        Program.messageHandler("Movimento inválido para "+pieceName+". Existe outra peça no caminho.");
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            Program.messageHandler("ERRO: Movimento inválido para"+pieceName+". MOVIMENTO NÃO TRATADO.");
+            return false;
         }
         public static bool isValidForRook(char piece, int[] coordinates, char[,] board){
             /*
@@ -98,34 +151,49 @@ namespace RuleMachineNS
                 Program.messageHandler("Movimento inválido para a Torre. Movimento vertical e horizontal.");
                 return false;
             }
-            if((linInicial < linFinal) || (colInicial < colFinal)){
-                moveOne = 1;
-            }else{
-                moveOne = -1;
+            string name = "a Torre";
+            return isValidHorizontalVertical(piece, coordinates, board, name);
+        }
+        public static bool isValidDiagonal(char piece, int[] coordinates, char[,] board, string pieceName){
+            int lin,col;
+            int linInicial, colInicial, linFinal, colFinal;
+            int moveX, moveY;
+            linInicial = coordinates[0];
+            colInicial = coordinates[1];
+            linFinal = coordinates[2];
+            colFinal = coordinates[3];
+
+            if(linInicial < linFinal){
+                moveX = 1;
+                if(colInicial < colFinal) moveY = 1;
+                else moveY = -1;
+            } else{
+                moveX = -1;
+                if(colInicial < colFinal) moveY = 1;
+                else moveY = -1;
             }
-            Console.WriteLine("MEU MOVEONE: "+moveOne);
-            if(linInicial != linFinal){
-                for(lin = linInicial+moveOne; lin != linFinal+moveOne; lin=lin+moveOne){
-                    char currentPiece = board[lin, colInicial];
-                    if(!Types.isEmpty(currentPiece) && (lin != linFinal)){
-                        Program.messageHandler("Movimento inválido para a Torre. Existe outra peça no caminho.");
-                        return false;
-                    }
+
+            int auxX = 0, auxY = 0;
+            lin = linInicial;
+            col = colInicial;
+            while(true){
+                lin += moveX;
+                if(lin != linFinal) auxX++;
+                col += moveY;
+                if(col != colFinal) auxY++;
+                if((lin == linFinal) && (col == colFinal)) return true;
+                if((lin == linFinal) || (col == colFinal)){
+                    Program.messageHandler("Movimento inválido para "+pieceName+". São permitidos somente movimentos nas diagonais.");
+                    return false;
                 }
-                return true;
-            }
-            if(colInicial != colFinal){
-                Console.WriteLine("COLUNAS PERCORRIDAS");
-                for(col = colInicial+moveOne; col != colFinal+moveOne; col=col+moveOne){
-                    char currentPiece = board[linInicial, col];
-                    if(!Types.isEmpty(currentPiece) && (col != colFinal)){
-                        Program.messageHandler("Movimento inválido para a Torre. Existe outra peça no caminho.");
-                        return false;
-                    }
+                char currentPiece = board[lin, col];
+                if(!Types.isEmpty(currentPiece) && ((col != colFinal) || (lin != linFinal))){
+                    Program.messageHandler("Movimento inválido para "+pieceName+". Existe outra peça no caminho.");
+                    return false;
                 }
-                return true;
             }
-            Program.messageHandler("ERRO: Movimento inválido para a Torre. MOVIMENTO NÃO TRATADO.");
+
+            Program.messageHandler("ERRO: Movimento inválido para "+pieceName+". MOVIMENTO NÃO TRATADO.");
             return false;//TODO
         }
         public static bool isValidForBishop(char piece, int[] coordinates, char[,] board){
@@ -134,7 +202,21 @@ namespace RuleMachineNS
             The bishop piece cannot move past any piece that is obstructing its path.
             The bishop can take any other piece on the board that is within its bounds of movement.
              */
-            return false;//TODO
+            int lin, col;
+            int linInicial, colInicial, linFinal, colFinal;
+            int moveX, moveY;
+            linInicial = coordinates[0];
+            colInicial = coordinates[1];
+            linFinal = coordinates[2];
+            colFinal = coordinates[3];
+
+            if((linInicial == linFinal) || (colInicial == colFinal)){
+                Program.messageHandler("Movimento inválido para o Bispo. São permitidos somente movimentos nas diagonais.");
+                return false;
+            }
+
+            string name = "o Bispo";
+            return isValidDiagonal(piece, coordinates, board, name);
         }
         public static bool isValidForPawn(char piece, int[] coordinates, char[,] board, int currentPlayer){
             /*
@@ -183,6 +265,55 @@ namespace RuleMachineNS
         }
         public static bool isCheck(){
             return false;
+        }
+
+        public static LinkedList<int[]> possible_moves(char[,] board, int currentPlayer){
+            LinkedList<int[]> moves = new LinkedList<int[]>();
+            char currentPiece;
+            int[] currentMove = new int[4];
+            int lin1,col1,lin2,col2, size;
+            /*
+            percorrer toda a matriz procurando por peças do jogador atual
+            para toda peça encontrada deve-se verificar para todas as casas da matriz se uma movimentação para aquela casa
+            é uma movimentação válida.
+            Se for uma movimentação válida, adicionar a lista encadeada a movimentação atual(currentMove)
+            */
+            currentMove = fillMove(currentMove, -1, -1, -1, -1);
+            size = board.GetLength(0);
+            int contador = 0;
+            int contador2 = 0;
+            Program.activateOrDeactivateMessageHandler();
+            for(lin1 = 0 ; lin1 < size ; lin1++){//pega todas as peças do jogador
+                for(col1 = 0; col1 < size; col1++){
+                    currentPiece = board[lin1, col1];
+                    if(Types.isPlayerX(currentPiece, currentPlayer)){//é peça do jogador
+                        for(lin2 = 0; lin2 < size ; lin2++){//verifica para todas as casas do tabuleiro se um movimento para aquela casa é válido
+                            for(col2 = 0; col2 < size ; col2++){
+                                contador++;
+                                currentMove = fillMove(currentMove, lin1, col1, lin2, col2);
+                                if(validateMove(currentMove, board, currentPlayer)){//movimento é válido
+                                    moves.AddLast(currentMove);//coloca na lista de movimentos válidos
+                                    contador2++;
+                                    //TESTAR
+                                }
+                                currentMove = fillMove(currentMove, -1, -1, -1, -1);//reseta
+                            }
+                        }
+                    }
+                }
+            }
+            Program.activateOrDeactivateMessageHandler();
+            Console.WriteLine("CONTADOR: " +contador);
+            Console.WriteLine("QTD JOGADAS POSSIVEIS: "+contador2);
+            return moves;
+        }
+        public static int[] fillMove(int[] move, int lin1, int col1, int lin2, int col2){
+            int[] newMove = new int[4];
+            newMove[0] = lin1;
+            newMove[1] = col1;
+            newMove[2] = lin2;
+            newMove[3] = col2;
+            return newMove;
         }
     }
 }
