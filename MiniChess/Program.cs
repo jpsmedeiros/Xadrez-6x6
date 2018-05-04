@@ -24,7 +24,7 @@ namespace MiniChess
                 printBoard(board);
                 movementInterface();
                 printBoard(board);
-            
+                Console.WriteLine("Eval: " + evalSimples(board));
                 if (gameIsOver(board)){
                     Console.WriteLine("GAME OVER, player" + getWinner(board) + " ganhou a partida!");
                     game = false;
@@ -204,6 +204,47 @@ namespace MiniChess
                 if (is_king) return player;
             }
             return -1;
+        }
+        public static int evalSimples(char[,] atual){
+            int p=0, b=0, t=0, q=0;
+            //int k=0;
+            //char[,] board = new char[6, 6];
+            //board = State.board;
+            //Types comp = new Types();
+            char chP = Char.ToLower(Types.PAWN);
+            char chB = Char.ToLower(Types.BISHOP);
+            char chR = Char.ToLower(Types.ROOK);
+            char chQ = Char.ToLower(Types.QUEEN);
+            for(int i=0; i<6; i++){
+                for(int j=0; j<6; j++){
+                    if(atual[i,j].Equals(chP)){
+                        p+=1;
+                    }
+                    if(atual[i,j].Equals(Types.PAWN)){
+                        p-=1;
+                    }
+                    if(atual[i,j].Equals(chB)){
+                        b+=1;
+                    }
+                    if(atual[i,j].Equals(Types.BISHOP)){
+                        b-=1;
+                    }
+                    if(atual[i,j].Equals(chR)){
+                        t+=1;
+                    }
+                    if(atual[i,j].Equals(Types.ROOK)){
+                        t-=1;
+                    }
+                    if(atual[i,j].Equals(chQ)){
+                        q+=1;
+                    }
+                    if(atual[i,j].Equals(Types.QUEEN)){
+                        q-=1;
+                    }
+                }
+            }
+            int eval = p + 3*b + 5*t + 9*q;
+            return eval;
         }
     }
 }
