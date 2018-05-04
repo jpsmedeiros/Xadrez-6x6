@@ -27,6 +27,11 @@ namespace RuleMachineNS
                 Program.messageHandler("Peça não pertence ao jogador atual, tente mover uma outra peça");
                 return false;
             }
+            char destination = board[coordinates[2], coordinates[3]];
+            if(Types.isPlayerX(destination, currentPlayer)){
+                Program.messageHandler("Peça pertence ao jogador atual, não pode capturar");
+                return false;
+            }
             if((coordinates[0] == coordinates[2]) && coordinates[1] == coordinates[3]){
                 Program.messageHandler("Você deve movimentar a peça para uma posição diferente da atual");
                 return false;
