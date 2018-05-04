@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TypesNS;
 using MiniChess;
 
@@ -183,6 +184,53 @@ namespace RuleMachineNS
         }
         public static bool isCheck(){
             return false;
+        }
+
+        public static LinkedList<int[]> possible_moves(char[,] board, int currentPlayer){
+            LinkedList<int[]> moves = new LinkedList<int[]>();
+            char currentPiece;
+            int[] currentMove = new int[4];
+            int lin1,col1,lin2,col2, size;
+            /*
+            percorrer toda a matriz procurando por peças do jogador atual
+            para toda peça encontrada deve-se verificar para todas as casas da matriz se uma movimentação para aquela casa
+            é uma movimentação válida.
+            Se for uma movimentação válida, adicionar a lista encadeada a movimentação atual(currentMove)
+            */
+            currentMove = fillMove(currentMove, -1, -1, -1, -1);
+            size = board.GetLength(0);
+            int contador = 0;
+            int contador2 = 0;
+            for(lin1 = 0 ; lin1 < size ; lin1++){//pega todas as peças do jogador
+                for(col1 = 0; col1 < size; col1++){
+                    currentPiece = board[lin1, col1];
+                    if(Types.isPlayerX(currentPiece, currentPlayer)){//é peça do jogador
+                        for(lin2 = 0; lin2 < size ; lin2++){//verifica para todas as casas do tabuleiro se um movimento para aquela casa é válido
+                            for(col2 = 0; col2 < size ; col2++){
+                                contador++;
+                                currentMove = fillMove(currentMove, lin1, col1, lin2, col2);
+                                if(validateMove(currentMove, board, currentPlayer)){//movimento é válido
+                                    moves.AddLast(currentMove);//coloca na lista de movimentos válidos
+                                    contador2++;
+                                    //TESTAR
+                                }
+                                currentMove = fillMove(currentMove, -1, -1, -1, -1);//reseta
+                            }
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("CONTADOR: " +contador);
+            Console.WriteLine("QTD JOGADAS POSSIVEIS: "+contador2);
+            return moves;
+        }
+        public static int[] fillMove(int[] move, int lin1, int col1, int lin2, int col2){
+            int[] newMove = new int[4];
+            newMove[0] = lin1;
+            newMove[1] = col1;
+            newMove[2] = lin2;
+            newMove[3] = col2;
+            return newMove;
         }
     }
 }
