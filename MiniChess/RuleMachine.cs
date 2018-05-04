@@ -8,7 +8,6 @@ namespace RuleMachineNS
     class RuleMachine
     {
         public static bool validateMove(int[] coordinates, char[,] board, int currentPlayer){
-            //TODO verificar se não ta comendo peça do próprio jogador
             for(int i=0;i<coordinates.Length;i++){
                 int atual = coordinates[i]+1;
                 if(atual > 6 || atual < 1){
