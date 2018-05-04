@@ -20,7 +20,7 @@ namespace MiniChess
 
             while(game){
                 printBoard(board);
-                //RuleMachine.possible_moves(board, currentPlayer);
+                RuleMachine.possible_moves(board, currentPlayer);
                 movementInterface();
                 //se acabar o jogo na rodada printar o tabuleiro depois da movimentação
             }

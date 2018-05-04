@@ -18,7 +18,7 @@ namespace RuleMachineNS
                 }
             }
             char piece = board[coordinates[0], coordinates[1]];
-            Console.WriteLine("PEÇA SENDO AVALIADA: "+piece);
+            //Console.WriteLine("PEÇA SENDO AVALIADA: "+piece);
             if(Types.isEmpty(piece)){
                 Program.messageHandler("Casa vazia, tente selecionar outra casa");
                 return false;
@@ -46,7 +46,6 @@ namespace RuleMachineNS
                 case Types.BISHOP:
                     return isValidForBishop(piece, coordinates, board);
                 case Types.PAWN:
-                    Console.WriteLine("Verificando para peão");
                     return isValidForPawn(piece, coordinates, board, currentPlayer);
                 default:
                     return false;
@@ -104,7 +103,6 @@ namespace RuleMachineNS
             }else{
                 moveOne = -1;
             }
-            Console.WriteLine("MEU MOVEONE: "+moveOne);
             if(linInicial != linFinal){
                 for(lin = linInicial+moveOne; lin != linFinal+moveOne; lin=lin+moveOne){
                     char currentPiece = board[lin, colInicial];
@@ -116,7 +114,6 @@ namespace RuleMachineNS
                 return true;
             }
             if(colInicial != colFinal){
-                Console.WriteLine("COLUNAS PERCORRIDAS");
                 for(col = colInicial+moveOne; col != colFinal+moveOne; col=col+moveOne){
                     char currentPiece = board[linInicial, col];
                     if(!Types.isEmpty(currentPiece) && (col != colFinal)){
