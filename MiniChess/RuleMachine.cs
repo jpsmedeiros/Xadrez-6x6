@@ -84,7 +84,56 @@ namespace RuleMachineNS
             The queen cannot "jump" over any piece on the board, so its movements are restricted to any direction of unoccupied squares.
             The queen can be used to capture any of your opponent's pieces on the board.
              */
-            return false;//TODO
+            int lin,col;
+            int linInicial, colInicial, linFinal, colFinal;
+            linInicial = coordinates[0];
+            colInicial = coordinates[1];
+            linFinal = coordinates[2];
+            colFinal = coordinates[3];
+            string name = "a Rainha";
+            if((linInicial != linFinal) && (colInicial != colFinal)) return isValidDiagonal(piece, coordinates, board, name);
+            else return isValidHorizontalVertical(piece, coordinates, board, name);
+            /*
+            Program.messageHandler("ERRO: Movimento inválido para a Rainha. MOVIMENTO NÃO TRATADO.");
+            return false;//TODO*/
+        }
+        public static bool isValidHorizontalVertical(char piece, int[] coordinates, char[,] board, string pieceName){
+            int lin,col;
+            int linInicial, colInicial, linFinal, colFinal;
+            int moveOne;
+            linInicial = coordinates[0];
+            colInicial = coordinates[1];
+            linFinal = coordinates[2];
+            colFinal = coordinates[3];
+
+            if((linInicial < linFinal) || (colInicial < colFinal)){
+                moveOne = 1;
+            }else{
+                moveOne = -1;
+            }
+            if(linInicial != linFinal){
+                for(lin = linInicial+moveOne; lin != linFinal+moveOne; lin=lin+moveOne){
+                    char currentPiece = board[lin, colInicial];
+                    if(!Types.isEmpty(currentPiece) && (lin != linFinal)){
+                        Program.messageHandler("Movimento inválido para "+pieceName+". Existe outra peça no caminho.");
+                        return false;
+                    }
+                }
+                return true;
+            }
+            if(colInicial != colFinal){
+                for(col = colInicial+moveOne; col != colFinal+moveOne; col=col+moveOne){
+                    char currentPiece = board[linInicial, col];
+                    if(!Types.isEmpty(currentPiece) && (col != colFinal)){
+                        Program.messageHandler("Movimento inválido para "+pieceName+". Existe outra peça no caminho.");
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            Program.messageHandler("ERRO: Movimento inválido para"+pieceName+". MOVIMENTO NÃO TRATADO.");
+            return false;
         }
         public static bool isValidForRook(char piece, int[] coordinates, char[,] board){
             /*
@@ -102,52 +151,17 @@ namespace RuleMachineNS
                 Program.messageHandler("Movimento inválido para a Torre. Movimento vertical e horizontal.");
                 return false;
             }
-            if((linInicial < linFinal) || (colInicial < colFinal)){
-                moveOne = 1;
-            }else{
-                moveOne = -1;
-            }
-            if(linInicial != linFinal){
-                for(lin = linInicial+moveOne; lin != linFinal+moveOne; lin=lin+moveOne){
-                    char currentPiece = board[lin, colInicial];
-                    if(!Types.isEmpty(currentPiece) && (lin != linFinal)){
-                        Program.messageHandler("Movimento inválido para a Torre. Existe outra peça no caminho.");
-                        return false;
-                    }
-                }
-                return true;
-            }
-            if(colInicial != colFinal){
-                for(col = colInicial+moveOne; col != colFinal+moveOne; col=col+moveOne){
-                    char currentPiece = board[linInicial, col];
-                    if(!Types.isEmpty(currentPiece) && (col != colFinal)){
-                        Program.messageHandler("Movimento inválido para a Torre. Existe outra peça no caminho.");
-                        return false;
-                    }
-                }
-                return true;
-            }
-            Program.messageHandler("ERRO: Movimento inválido para a Torre. MOVIMENTO NÃO TRATADO.");
-            return false;//TODO
+            string name = "a Torre";
+            return isValidHorizontalVertical(piece, coordinates, board, name);
         }
-        public static bool isValidForBishop(char piece, int[] coordinates, char[,] board){
-            /*
-            The bishop can move in any direction diagonally, so long as it is not obstructed by another piece.
-            The bishop piece cannot move past any piece that is obstructing its path.
-            The bishop can take any other piece on the board that is within its bounds of movement.
-             */
-            int lin, col;
+        public static bool isValidDiagonal(char piece, int[] coordinates, char[,] board, string pieceName){
+            int lin,col;
             int linInicial, colInicial, linFinal, colFinal;
             int moveX, moveY;
             linInicial = coordinates[0];
             colInicial = coordinates[1];
             linFinal = coordinates[2];
             colFinal = coordinates[3];
-
-            if((linInicial == linFinal) || (colInicial == colFinal)){
-                Program.messageHandler("Movimento inválido para o Bispo. São permitidos somente movimentos nas diagonais.");
-                return false;
-            }
 
             if(linInicial < linFinal){
                 moveX = 1;
@@ -169,18 +183,40 @@ namespace RuleMachineNS
                 if(col != colFinal) auxY++;
                 if((lin == linFinal) && (col == colFinal)) return true;
                 if((lin == linFinal) || (col == colFinal)){
-                    Program.messageHandler("Movimento inválido para o Bispo. São permitidos somente movimentos nas diagonais.");
+                    Program.messageHandler("Movimento inválido para "+pieceName+". São permitidos somente movimentos nas diagonais.");
                     return false;
                 }
                 char currentPiece = board[lin, col];
                 if(!Types.isEmpty(currentPiece) && ((col != colFinal) || (lin != linFinal))){
-                    Program.messageHandler("Movimento inválido para o Bispo. Existe outra peça no caminho.");
+                    Program.messageHandler("Movimento inválido para "+pieceName+". Existe outra peça no caminho.");
                     return false;
                 }
             }
 
-            Program.messageHandler("ERRO: Movimento inválido para o Bispo. MOVIMENTO NÃO TRATADO.");
+            Program.messageHandler("ERRO: Movimento inválido para "+pieceName+". MOVIMENTO NÃO TRATADO.");
             return false;//TODO
+        }
+        public static bool isValidForBishop(char piece, int[] coordinates, char[,] board){
+            /*
+            The bishop can move in any direction diagonally, so long as it is not obstructed by another piece.
+            The bishop piece cannot move past any piece that is obstructing its path.
+            The bishop can take any other piece on the board that is within its bounds of movement.
+             */
+            int lin, col;
+            int linInicial, colInicial, linFinal, colFinal;
+            int moveX, moveY;
+            linInicial = coordinates[0];
+            colInicial = coordinates[1];
+            linFinal = coordinates[2];
+            colFinal = coordinates[3];
+
+            if((linInicial == linFinal) || (colInicial == colFinal)){
+                Program.messageHandler("Movimento inválido para o Bispo. São permitidos somente movimentos nas diagonais.");
+                return false;
+            }
+
+            string name = "o Bispo";
+            return isValidDiagonal(piece, coordinates, board, name);
         }
         public static bool isValidForPawn(char piece, int[] coordinates, char[,] board, int currentPlayer){
             /*
