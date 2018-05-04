@@ -132,6 +132,68 @@ namespace RuleMachineNS
             The bishop piece cannot move past any piece that is obstructing its path.
             The bishop can take any other piece on the board that is within its bounds of movement.
              */
+            int lin, col;
+            int linInicial, colInicial, linFinal, colFinal;
+            int moveX, moveY;
+            linInicial = coordinates[0];
+            colInicial = coordinates[1];
+            linFinal = coordinates[2];
+            colFinal = coordinates[3];
+
+            if((linInicial == linFinal) || (colInicial == colFinal)){
+                Program.messageHandler("Movimento inválido para o Bispo. São permitidos somente movimentos nas diagonais.");
+                return false;
+            }
+
+            if(linInicial < linFinal){
+                moveX = 1;
+                if(colInicial < colFinal) moveY = 1;
+                else moveY = -1;
+            } else{
+                moveX = -1;
+                if(colInicial < colFinal) moveY = 1;
+                else moveY = -1;
+            }
+
+            //Console.WriteLine("MEU MOVEX: "+moveX);
+            //Console.WriteLine("MEU MOVEY: "+moveY);
+
+            int auxX = 0, auxY = 0;
+            lin = linInicial+moveX; //3+1
+            col = colInicial+moveY; //4+1
+            while((lin != linFinal+moveX) && (col != colFinal+moveY)){ // 6 6
+                auxX++;
+                auxY++;
+                char currentPiece = board[lin, col];
+                if(!Types.isEmpty(currentPiece) && ((col != colFinal) || (lin != linFinal))){
+                    Program.messageHandler("Movimento inválido para o Bispo. Existe outra peça no caminho.");
+                    return false;
+                }
+                lin += moveX;
+                col += moveY;
+            }
+
+            /*for(lin = linInicial+moveX; lin != linFinal+moveX; lin+=moveX){
+                auxX++;
+                for(col = colInicial+moveY; col != colFinal+moveY; col+=moveY){
+                    auxY++;
+                    char currentPiece = board[lin, col];
+                    if(!Types.isEmpty(currentPiece) && ((col != colFinal) || (lin != linFinal))){
+                        Program.messageHandler("Movimento inválido para o Bispo. Existe outra peça no caminho.");
+                        return false;
+                    }
+                }
+            }*/
+
+            //Console.WriteLine("AUXX: "+auxX);
+            //Console.WriteLine("AUXY: "+auxY);
+            if(auxX == auxY) return true; //se auxX == auxY, significa que fez a mesma quantidade de movimento na vertical e na horizontal, ou seja, manteve-se na diagonal
+            else{
+                Program.messageHandler("Movimento inválido para o Bispo. São permitidos somente movimentos nas diagonais.");
+                return false;
+            }
+
+            Program.messageHandler("ERRO: Movimento inválido para o Bispo. MOVIMENTO NÃO TRATADO.");
             return false;//TODO
         }
         public static bool isValidForPawn(char piece, int[] coordinates, char[,] board, int currentPlayer){
