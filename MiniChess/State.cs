@@ -7,6 +7,7 @@ namespace StateNS
         char[,] board;
         int currentPlayer;
         int[] lastMove;
+        int playsCount;
 
         public State(char[,] board, int currentPlayer, int[] lastMove){
             this.board = board;
@@ -24,6 +25,7 @@ namespace StateNS
                 Console.Write("\n");
             }
             Console.WriteLine($"LastMove: [{lastMove[0]}][{lastMove[1]}] to [{lastMove[2]}][{lastMove[3]}]");
+            Console.WriteLine($"Plays Count: {playsCount}");
         }
     }
 }
