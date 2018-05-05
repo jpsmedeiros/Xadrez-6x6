@@ -7,6 +7,7 @@ namespace MiniChess
 {
     class Program
     {
+        
         public static int currentPlayer;
         private static bool game;
         public static int gameMode = 1;// default = 1: Player vs Player
@@ -14,6 +15,8 @@ namespace MiniChess
         private static bool messageHandlerActive = true;
         public static Types types = new Types();
         
+        State currentState = new State(board,currentPlayer, null);
+
         static void Main(string[] args)
         {
             // configuração inicial do jogo
