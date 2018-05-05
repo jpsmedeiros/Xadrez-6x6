@@ -306,6 +306,9 @@ namespace RuleMachineNS
             Program.activateOrDeactivateMessageHandler();
             Console.WriteLine("CONTADOR: " +contador);
             Console.WriteLine("QTD JOGADAS POSSIVEIS: "+contador2);
+            // if(contador2>36){
+            //     System.Environment.Exit(1);
+            // }
             return moves;
         }
         public static int[] fillMove(int[] move, int lin1, int col1, int lin2, int col2){

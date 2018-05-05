@@ -2,6 +2,7 @@
 using StateNS;
 using TypesNS;
 using RuleMachineNS;
+using AINS;
 
 namespace MiniChess
 {
@@ -12,6 +13,8 @@ namespace MiniChess
         public static State currentState;
         private static bool messageHandlerActive = true;
         public static Types types = new Types();
+
+        public static AI ia1 = new AI(2,1);
         
         static void Main(string[] args)
         {
@@ -78,8 +81,7 @@ namespace MiniChess
                         //TODO
                         Console.WriteLine("Esperando input da IA...");
                         //CHAMA A IA
-                        //input = callIAAction(...);
-                        input = "0 0 0 0";//Só para tirar o erro
+                        input = ia1.play(currentState);
                     }
                 }else{// IA vs IA => sempre chama a IA
                     //TODO
