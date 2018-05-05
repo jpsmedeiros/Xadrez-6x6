@@ -1,4 +1,5 @@
 using System;
+using TypesNS;
 
 namespace StateNS
 {
@@ -10,7 +11,7 @@ namespace StateNS
         public int playsCount;
 
         public State(char[,] board, int currentPlayer, int[] lastMove){
-            this.board = board;
+            this.board = (char[,])board.Clone();
             this.currentPlayer = currentPlayer;
             this.lastMove = lastMove;
         }
@@ -24,8 +25,22 @@ namespace StateNS
                 }
                 Console.Write("\n");
             }
-            Console.WriteLine($"LastMove: [{lastMove[0]}][{lastMove[1]}] to [{lastMove[2]}][{lastMove[3]}]");
-            Console.WriteLine($"Plays Count: {playsCount}");
+            if(lastMove != null){
+                Console.WriteLine($"LastMove: [{lastMove[0]}][{lastMove[1]}] to [{lastMove[2]}][{lastMove[3]}]");
+            }
+            //Console.WriteLine($"Plays Count: {playsCount}");
+        }
+
+        public static State result(State old, int[] action){
+            State newState = new State(old.board,old.currentPlayer,old.lastMove);
+            
+            char piece = newState.board[action[0],action[1]];
+            newState.board[action[0],action[1]] = Types.EMPTY;     
+            newState.board[action[2],action[3]] = piece;
+            newState.currentPlayer = newState.currentPlayer == 1 ? 2 : 1;
+            newState.lastMove = action;
+
+            return newState;
         }
     }
 }
