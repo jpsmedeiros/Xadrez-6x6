@@ -258,6 +258,10 @@ namespace RuleMachineNS
             //    Program.messageHandler("Movimento inválido para o peão. Movimento muito grande na diagonal.");
             //    return false;
             //}
+            
+            // Console.Write("\n\nTE PEGUEI NO PULO JOAO!!");
+            // Console.WriteLine($"{coordinates[0]} {coordinates[1]} {coordinates[2]} {coordinates[3]}");
+            
             return true;
         }
         public static bool isAttackMove(int[] coordinates, char[,] board){
@@ -304,11 +308,10 @@ namespace RuleMachineNS
                 }
             }
             Program.activateOrDeactivateMessageHandler();
-            Console.WriteLine("CONTADOR: " +contador);
-            Console.WriteLine("QTD JOGADAS POSSIVEIS: "+contador2);
-            // if(contador2>36){
-            //     System.Environment.Exit(1);
-            // }
+            
+            // Console.WriteLine("CONTADOR: " +contador);
+            // Console.WriteLine("QTD JOGADAS POSSIVEIS: "+contador2);
+            
             return moves;
         }
         public static int[] fillMove(int[] move, int lin1, int col1, int lin2, int col2){

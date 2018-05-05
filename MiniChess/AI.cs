@@ -17,6 +17,12 @@ namespace AINS
 
         public string play(State state){
             int[] p = alpha_beta_search(state);
+            
+            //ajusta os indices o padrao que aparece na tela
+            for(int i=0; i<p.Length; i++){
+                p[i] = p[i] + 1;
+            }
+
             string result = string.Join(" ", p);
             Console.WriteLine(result);
             return result;
@@ -65,6 +71,9 @@ namespace AINS
         }
 
         public int max_value(State state, int alfa, int beta){
+            if(cutoff_test(state))
+                return utility(state);
+            
             if(Program.gameIsOver(state)){
                 return utility(state);
             }
@@ -89,6 +98,9 @@ namespace AINS
         }
 
         public int min_value(State state,int alfa, int beta){
+            if(cutoff_test(state))
+                return utility(state);
+            
             if(Program.gameIsOver(state)){
                 return utility(state);
             }
@@ -115,11 +127,22 @@ namespace AINS
 
         //Utility avalia apenas estados terminais
         public int utility(State state){
-            if(state.currentPlayer == playerId){
-                return Int32.MinValue;
+            // if(state.currentPlayer == playerId){
+            //     return Int32.MinValue;
+            // }
+            // else{
+            //     return Int32.MaxValue;
+            // }
+
+            return Program.evalSimples(state.board);
+        }
+
+        public bool cutoff_test(State state){
+            if((state.playsCount - Program.currentState.playsCount) <= 10){
+                return true;
             }
             else{
-                return Int32.MaxValue;
+                return false;
             }
         }
 
