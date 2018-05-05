@@ -77,7 +77,7 @@ namespace RuleMachineNS
                 return false;
             }
             
-            return isCheck();//TODO
+            //return isCheck();//TODO
         }
         public static bool isValidForQueen(char piece, int[] coordinates, char[,] board){
             /*
@@ -85,7 +85,6 @@ namespace RuleMachineNS
             The queen cannot "jump" over any piece on the board, so its movements are restricted to any direction of unoccupied squares.
             The queen can be used to capture any of your opponent's pieces on the board.
              */
-            int lin,col;
             int linInicial, colInicial, linFinal, colFinal;
             linInicial = coordinates[0];
             colInicial = coordinates[1];
@@ -141,9 +140,7 @@ namespace RuleMachineNS
             The rook piece can move forward, backward, left or right at any time.
             The rook piece can move anywhere from 1 to 5 squares in any direction, so long as it is not obstructed by any other piece.
              */
-            int lin,col;
             int linInicial, colInicial, linFinal, colFinal;
-            int moveOne;
             linInicial = coordinates[0];
             colInicial = coordinates[1];
             linFinal = coordinates[2];
@@ -194,8 +191,8 @@ namespace RuleMachineNS
                 }
             }
 
-            Program.messageHandler("ERRO: Movimento inválido para "+pieceName+". MOVIMENTO NÃO TRATADO.");
-            return false;//TODO
+            //Program.messageHandler("ERRO: Movimento inválido para "+pieceName+". MOVIMENTO NÃO TRATADO.");
+            //return false;//TODO
         }
         public static bool isValidForBishop(char piece, int[] coordinates, char[,] board){
             /*
@@ -203,9 +200,7 @@ namespace RuleMachineNS
             The bishop piece cannot move past any piece that is obstructing its path.
             The bishop can take any other piece on the board that is within its bounds of movement.
              */
-            int lin, col;
             int linInicial, colInicial, linFinal, colFinal;
-            int moveX, moveY;
             linInicial = coordinates[0];
             colInicial = coordinates[1];
             linFinal = coordinates[2];
@@ -246,19 +241,11 @@ namespace RuleMachineNS
                 }
             }
             //ações daqui pra baixo não serão ataques
-            if(coordinates[2] != coordinates[0]+moveOne){
-                Program.messageHandler("Movimento inválido para o peão. Movimento para o lado ou acima da quantidade esperadade casas");
-                return false;
+            if( (coordinates[2] == coordinates[0]+moveOne) && (coordinates[1] == coordinates[3])){
+                return true;
             }
-            //if((coordinates[1] != coordinates[3])){//não é ataque e movimentou na diagonal
-            //    Program.messageHandler("Movimento inválido para o peão. Movimento na diagonal fora de movimento de ataque.");
-            //    return false;
-            //}
-            //if((coordinates[3] > coordinates[1]+1) || coordinates[3] < coordinates[1]-1){
-            //    Program.messageHandler("Movimento inválido para o peão. Movimento muito grande na diagonal.");
-            //    return false;
-            //}
-            return true;
+            Program.messageHandler("Movimento inválido para o peão. Movimento para o lado ou acima da quantidade esperada de casas");
+            return false;
         }
         public static bool isAttackMove(int[] coordinates, char[,] board){
             char piece = board[coordinates[2], coordinates[3]];

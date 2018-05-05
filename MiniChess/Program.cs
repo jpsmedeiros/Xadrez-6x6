@@ -22,11 +22,12 @@ namespace MiniChess
             // game loop
             while(game){
                 printBoard();
-                RuleMachine.possible_moves(currentState);
+                //RuleMachine.possible_moves(currentState);
                 movementInterface();
-                printBoard();
+                //printBoard();
 
                 if (gameIsOver(currentState)){
+                    printBoard();
                     Console.WriteLine("GAME OVER, player" + getWinner(currentState) + " ganhou a partida!");
                     game = false;
                 };
@@ -37,7 +38,7 @@ namespace MiniChess
             char[,] new_board = initializeBoard();
             int initialPlayer = 1;
             currentState = new State(new_board, initialPlayer, null);
-            Console.Clear();
+            //Console.Clear();
             game = true;
         }
 
