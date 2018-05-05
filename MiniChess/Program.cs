@@ -7,7 +7,6 @@ namespace MiniChess
 {
     class Program
     {
-        public static int currentPlayer;
         private static bool game;
         public static int gameMode = 1; // default = 1: Player vs Player
         public static State currentState;
@@ -169,7 +168,7 @@ namespace MiniChess
             }catch(System.FormatException){
                 Console.WriteLine("Movimento em formato incorreto, tente digitar apenas números separados por espaços\n");
             }
-            if(!RuleMachine.validateMove(coordinates, currentState.board, currentPlayer)){
+            if(!RuleMachine.validateMove(coordinates, currentState.board, currentState.currentPlayer)){
                 return true;
             }
             movePiece(coordinates);
@@ -212,7 +211,7 @@ namespace MiniChess
         }
 
         public static void printBoard(State currentState){
-            Console.WriteLine($"Current Player: {currentPlayer}");//TODO Adicionar jogador atual
+            Console.WriteLine($"Current Player: {currentState.currentPlayer}");
             Console.WriteLine("     Board");
             int size = currentState.board.GetLength(0);
             Console.Write($"  1 2 3 4 5 6\n");
@@ -232,7 +231,7 @@ namespace MiniChess
         }
 
         public int getCurrentPlayer(){
-            return currentPlayer;
+            return currentState.currentPlayer;
         }
         public static void messageHandler(String msg){
             if(messageHandlerActive){
