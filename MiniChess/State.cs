@@ -4,10 +4,10 @@ namespace StateNS
 {
     class State
     {
-        char[,] board;
-        int currentPlayer;
-        int[] lastMove;
-        int playsCount;
+        public char[,] board;
+        public int currentPlayer;
+        public int[] lastMove;
+        public int playsCount;
 
         public State(char[,] board, int currentPlayer, int[] lastMove){
             this.board = board;

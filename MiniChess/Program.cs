@@ -10,37 +10,36 @@ namespace MiniChess
         
         public static int currentPlayer;
         private static bool game;
-        public static int gameMode = 1;// default = 1: Player vs Player
-        public static char[,] board;
+        public static int gameMode = 1; // default = 1: Player vs Player
+        public static State currentState;
         private static bool messageHandlerActive = true;
         public static Types types = new Types();
         
-        State currentState = new State(board,currentPlayer, null);
-
         static void Main(string[] args)
         {
             // configuração inicial do jogo
             initializeGame();
-            board = initializeBoard();
             menuInterface();
 
             // game loop
             while(game){
-                printBoard(board);
-                RuleMachine.possible_moves(board, currentPlayer);
+                printBoard();
+                RuleMachine.possible_moves(currentState);
                 movementInterface();
-                printBoard(board);
+                printBoard();
             
-                if (gameIsOver(board)){
-                    Console.WriteLine("GAME OVER, player" + getWinner(board) + " ganhou a partida!");
+                if (gameIsOver(currentState)){
+                    Console.WriteLine("GAME OVER, player" + getWinner(currentState) + " ganhou a partida!");
                     game = false;
                 };
             }       
         }
         
         public static void initializeGame(){
+            char[,] new_board = initializeBoard();
+            int initialPlayer = 1;
+            currentState = new State(new_board, initialPlayer, null);
             Console.Clear();
-            currentPlayer = 1;
             game = true;
         }
 
@@ -56,8 +55,7 @@ namespace MiniChess
                     board[lin, col] = '0'; //inicaliza com 0's representado casas vazias
                 }
             }
-            fillPieces(board);
-            return board;
+            return fillBoardPieces(board);
         }
 
         private static void menuInterface(){
@@ -74,8 +72,8 @@ namespace MiniChess
                 if(gameMode == 1){// P vs P => sem chamada a IA
                     Console.WriteLine("Movimente sua peça:\n");
                     input = Console.ReadLine();
-                }else if(gameMode == 2){// P vs IA => chama IA se currentPlayer == 2
-                    if(currentPlayer == 1){
+                }else if(gameMode == 2){// P vs IA => chama IA se state.currentPlayer == 2
+                    if(currentState.currentPlayer == 1){
                         Console.WriteLine("Movimente sua peça:\n");
                         input = Console.ReadLine();
                     }else{
@@ -87,7 +85,7 @@ namespace MiniChess
                     }
                 }else{// IA vs IA => sempre chama a IA
                     //TODO
-                    Console.WriteLine("Esperando input da IA " +currentPlayer +"...");
+                    Console.WriteLine("Esperando input da IA " + currentState.currentPlayer +"...");
                     //CHAMA A IA
                     //input = callIAAction(...);
                     input = "0 0 0 0";//Só para tirar o erro
@@ -172,24 +170,24 @@ namespace MiniChess
             }catch(System.FormatException){
                 Console.WriteLine("Movimento em formato incorreto, tente digitar apenas números separados por espaços\n");
             }
-            if(!RuleMachine.validateMove(coordinates, board, currentPlayer)){
-                return true; //HOMENS TRABALHANDO CUIDADO   
+            if(!RuleMachine.validateMove(coordinates, currentState.board, currentPlayer)){
+                return true;
             }
             movePiece(coordinates);
             return false;
         }
 
         public static void movePiece(int[] coordinates){
-            char piece = board[coordinates[0], coordinates[1]];
-            if(RuleMachine.isAttackMove(coordinates, board)){
-                capture(coordinates, board);
+            char piece = currentState.board[coordinates[0], coordinates[1]];
+            if(RuleMachine.isAttackMove(coordinates, currentState.board)){
+                capture(coordinates, currentState.board);
             }
-            board[coordinates[0], coordinates[1]] = Types.EMPTY;
-            board[coordinates[2], coordinates[3]] = piece;
+            currentState.board[coordinates[0], coordinates[1]] = Types.EMPTY;
+            currentState.board[coordinates[2], coordinates[3]] = piece;
             changeCurrentPlayer();
         }
 
-        public static char[,] fillPieces(char[,] board){//prenche as peças nas suas posições iniciais do jogo
+        public static char[,] fillBoardPieces(char[,] board){//prenche as peças nas suas posições iniciais do jogo
             int lin, col;
             int tamanho = board.GetLength(0);
             lin = 1;
@@ -210,23 +208,28 @@ namespace MiniChess
             board[5, 1] = board[5, 4] = Types.getPlayer2Piece(Types.BISHOP);
             board[5, 2] = Types.getPlayer2Piece(Types.KING);
             board[5, 3] = Types.getPlayer2Piece(Types.QUEEN);
+
             return board;
         }
 
-        public static void printBoard(char[,] board){
+        public static void printBoard(State currentState){
             Console.WriteLine($"Current Player: {currentPlayer}");//TODO Adicionar jogador atual
             Console.WriteLine("     Board");
-            int size = board.GetLength(0);
+            int size = currentState.board.GetLength(0);
             Console.Write($"  1 2 3 4 5 6\n");
             for(int lin=0; lin<size; lin++){
                 Console.Write($"{lin+1} ");
                 for(int col=0; col<size; col++){
-                    Console.Write($"{board[lin,col]} ");
+                    Console.Write($"{currentState.board[lin,col]} ");
                 }
                 Console.Write($"{lin+1} ");
                 Console.Write("\n");
             }
             Console.Write($"  1 2 3 4 5 6\n");
+        }
+
+        public static void printBoard(){
+            printBoard(currentState);
         }
 
         public int getCurrentPlayer(){
@@ -243,7 +246,7 @@ namespace MiniChess
         }
 
         public static void changeCurrentPlayer(){
-            currentPlayer = currentPlayer == 1 ? 2 : 1;
+            currentState.currentPlayer = currentState.currentPlayer == 1 ? 2 : 1;
             return;
         }
 
@@ -255,21 +258,24 @@ namespace MiniChess
             return Char.ToLower(piece);
         }
 
-        public static bool gameIsOver(char [,] board){
+        public static bool gameIsOver(State state){
             int number_of_kings = 0;
-            foreach (char piece in board)
+            foreach (char piece in state.board)
                 if (Types.getPlayer1Piece(piece) == Types.KING) number_of_kings++;
         
             return number_of_kings < 2;
         }
 
-        public static int getWinner(char [,] board){
-            // só retorna o correto caso o jogo já tenha acabado. (use gameIsOver)
-            foreach (char piece in board){
-                bool is_king = Types.getPlayer1Piece(piece) == Types.KING;
-                int player = Types.getPiecePlayer(piece);
-                if (is_king) return player;
+        // retorna -1 se o jogo não tiver ganhador ainda
+        public static int getWinner(State state){
+            if (gameIsOver(state)){
+                foreach (char piece in state.board){
+                    bool is_king = Types.getPlayer1Piece(piece) == Types.KING;
+                    int player = Types.getPiecePlayer(piece);
+                    if (is_king) return player;
+                }    
             }
+            
             return -1;
         }
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TypesNS;
+using StateNS;
 using MiniChess;
 
 namespace RuleMachineNS
@@ -17,7 +18,7 @@ namespace RuleMachineNS
                 }
             }
             char piece = board[coordinates[0], coordinates[1]];
-            //Console.WriteLine("PEÇA SENDO AVALIADA: "+piece);
+            //Console.WriteLine("PEÇA SENDO AVALIADA: "+ piece);
             if(Types.isEmpty(piece)){
                 Program.messageHandler("Casa vazia, tente selecionar outra casa");
                 return false;
@@ -267,7 +268,7 @@ namespace RuleMachineNS
             return false;
         }
 
-        public static LinkedList<int[]> possible_moves(char[,] board, int currentPlayer){
+        public static LinkedList<int[]> possible_moves(State state){
             LinkedList<int[]> moves = new LinkedList<int[]>();
             char currentPiece;
             int[] currentMove = new int[4];
@@ -279,19 +280,19 @@ namespace RuleMachineNS
             Se for uma movimentação válida, adicionar a lista encadeada a movimentação atual(currentMove)
             */
             currentMove = fillMove(currentMove, -1, -1, -1, -1);
-            size = board.GetLength(0);
+            size = state.board.GetLength(0);
             int contador = 0;
             int contador2 = 0;
             Program.activateOrDeactivateMessageHandler();
             for(lin1 = 0 ; lin1 < size ; lin1++){//pega todas as peças do jogador
                 for(col1 = 0; col1 < size; col1++){
-                    currentPiece = board[lin1, col1];
-                    if(Types.isPlayerX(currentPiece, currentPlayer)){//é peça do jogador
+                    currentPiece = state.board[lin1, col1];
+                    if(Types.isPlayerX(currentPiece, state.currentPlayer)){//é peça do jogador
                         for(lin2 = 0; lin2 < size ; lin2++){//verifica para todas as casas do tabuleiro se um movimento para aquela casa é válido
                             for(col2 = 0; col2 < size ; col2++){
                                 contador++;
                                 currentMove = fillMove(currentMove, lin1, col1, lin2, col2);
-                                if(validateMove(currentMove, board, currentPlayer)){//movimento é válido
+                                if(validateMove(currentMove, state.board, state.currentPlayer)){//movimento é válido
                                     moves.AddLast(currentMove);//coloca na lista de movimentos válidos
                                     contador2++;
                                     //TESTAR
