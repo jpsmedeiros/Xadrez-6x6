@@ -43,23 +43,27 @@ namespace AINS
             foreach(var move in moves){
                 //MAX(v,min_value(result(s,a),alfa,beta))
                 temp = min_value(State.result(state,move),alfa,beta);
-                if(v < temp)
+                if(v < temp){
                     v = temp;
                     moveIndex = i;    
-                
-                if(v >= beta)
+                }
+
+                if(v >= beta){
                     return move;
+                }
                 
                 //MAX(alfa,v)
-                if(alfa < v)
+                if(alfa < v){
                     alfa = v;
+                }
                 
                 i++;
             }
 
             LinkedList<int[]>.Enumerator e = moves.GetEnumerator();
-            for(i=0; i<moveIndex; i++){
+            for(i=0; i<moveIndex+1; i++){
                 e.MoveNext();
+                //Console.WriteLine($"{e.Current[0]} {e.Current[1]} {e.Current[2]} {e.Current[3]}");
             }
             return e.Current;
             // i=0;
@@ -71,11 +75,12 @@ namespace AINS
         }
 
         public int max_value(State state, int alfa, int beta){
-            if(cutoff_test(state))
-                return utility(state);
+            if(cut(state)){
+                return eval(state);
+            }
             
             if(Program.gameIsOver(state)){
-                return utility(state);
+                return eval(state);
             }
 
             int v = Int32.MinValue;
@@ -84,25 +89,29 @@ namespace AINS
             foreach(var move in moves){
                 //MAX(v,min_value(result(s,a),alfa,beta))
                 temp = min_value(State.result(state,move),alfa,beta);
-                if(v < temp)
+                if(v < temp){
                     v = temp;
+                }
                 
-                if(v >= beta)
+                if(v >= beta){
                     return v;
+                }
                 
                 //MAX(alfa,v)
-                if(alfa < v)
+                if(alfa < v){
                     alfa = v;
+                }
             }
             return v;
         }
 
         public int min_value(State state,int alfa, int beta){
-            if(cutoff_test(state))
-                return utility(state);
+            if(cut(state)){
+                return eval(state);
+            }
             
             if(Program.gameIsOver(state)){
-                return utility(state);
+                return eval(state);
             }
 
             int v = Int32.MaxValue;
@@ -115,34 +124,60 @@ namespace AINS
                     v = temp;
                 }
 
-                if(v <= alfa)
+                if(v <= alfa){
                     return v;
+                }
 
                 //MIN(beta,v)
-                if(beta > v)
+                if(beta > v){
                     beta = v;
+                }
             }
             return v;
         }
 
+        public int eval(State state){
+            switch(this.type){
+                case 1:
+                    return utility(state);
+                case 2:
+                    return Program.evalSimples(state.board);
+                default:
+                    return utility(state);
+            }
+
+        }
+
         //Utility avalia apenas estados terminais
         public int utility(State state){
-            // if(state.currentPlayer == playerId){
-            //     return Int32.MinValue;
-            // }
-            // else{
-            //     return Int32.MaxValue;
-            // }
+            if(state.currentPlayer == playerId){
+                return Int32.MinValue;
+            }
+            else{
+                return Int32.MaxValue;
+            }
 
-            return Program.evalSimples(state.board);
+            //return Program.evalSimples(state.board);
+        }
+
+        public bool cut(State state){
+            switch(this.type){
+                case 1:
+                    return false;
+                case 2:
+                    return cutoff_test(state);
+                default:
+                    return false;
+            }
         }
 
         public bool cutoff_test(State state){
-            if((state.playsCount - Program.currentState.playsCount) <= 10){
-                return true;
+            if((state.playsCount - Program.currentState.playsCount) <= 5){
+                //Console.WriteLine($"AAAAAA {state.playsCount}");
+                return false;
             }
             else{
-                return false;
+                return true;
             }
         }
 

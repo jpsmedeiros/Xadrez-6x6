@@ -14,7 +14,9 @@ namespace MiniChess
         private static bool messageHandlerActive = true;
         public static Types types = new Types();
 
-        public static AI ia1 = new AI(2,1);
+        public static AI ia1 = new AI(2,2);
+        public static AI ia2 = new AI(1,2);
+    
         
         static void Main(string[] args)
         {

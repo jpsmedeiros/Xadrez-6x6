@@ -292,8 +292,8 @@ namespace RuleMachineNS
             }
             Program.activateOrDeactivateMessageHandler();
             
-            // Console.WriteLine("CONTADOR: " +contador);
-            // Console.WriteLine("QTD JOGADAS POSSIVEIS: "+contador2);
+            Console.WriteLine("CONTADOR: " +contador);
+            Console.WriteLine("QTD JOGADAS POSSIVEIS: "+contador2);
             
             return moves;
         }
