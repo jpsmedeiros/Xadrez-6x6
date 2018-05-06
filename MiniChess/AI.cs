@@ -172,7 +172,7 @@ namespace AINS
         }
 
         public bool cutoff_test(State state){
-            if((state.playsCount - Program.currentState.playsCount) <= 5){
+            if((state.playsCount - Program.currentState.playsCount) <= 8){
                 //Console.WriteLine($"AAAAAA {state.playsCount}");
                 return false;
             }
