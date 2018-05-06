@@ -14,7 +14,9 @@ namespace MiniChess
         private static bool messageHandlerActive = true;
         public static Types types = new Types();
 
-        public static AI ia1 = new AI(2,1);
+        public static AI ia1 = new AI(2,2);
+        public static AI ia2 = new AI(1,2);
+    
         
         static void Main(string[] args)
         {
@@ -105,7 +107,7 @@ namespace MiniChess
             }while(handleModeInput(input));
         }
         public static bool handleModeInput(string input){
-                        try{
+            try{
                 int option = Int32.Parse(input);
                 switch(option){
                     case 1:
@@ -268,12 +270,12 @@ namespace MiniChess
             foreach (char piece in state.board)
                 if (Types.getPlayer1Piece(piece) == Types.KING) number_of_kings++;
         
-            return number_of_kings < 2;
+            return number_of_kings < 2 || state.checkDraw();
         }
 
         // retorna -1 se o jogo não tiver ganhador ainda
         public static int getWinner(State state){
-            if (gameIsOver(state)){
+            if (gameIsOver(state) && !state.checkDraw()){
                 foreach (char piece in state.board){
                     bool is_king = Types.getPlayer1Piece(piece) == Types.KING;
                     int player = Types.getPiecePlayer(piece);

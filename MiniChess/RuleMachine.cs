@@ -316,12 +316,13 @@ namespace RuleMachineNS
                 }
             }
             Program.activateOrDeactivateMessageHandler();
-            StackTrace stackTrace = new StackTrace();
+           
+            //StackTrace stackTrace = new StackTrace();
 
             // Get calling method name
-            Console.WriteLine(stackTrace.GetFrame(1).GetMethod().Name);
-            Console.WriteLine("CONTADOR: " +contador);
-            Console.WriteLine("QTD JOGADAS POSSIVEIS: "+contador2);
+            //Console.WriteLine(stackTrace.GetFrame(1).GetMethod().Name);
+            //Console.WriteLine("CONTADOR: " +contador);
+            //Console.WriteLine("QTD JOGADAS POSSIVEIS: "+contador2);
             
             return moves;
         }

@@ -1,5 +1,6 @@
 using System;
 using TypesNS;
+using RuleMachineNS;
 
 namespace StateNS
 {
@@ -9,12 +10,14 @@ namespace StateNS
         public int currentPlayer;
         public int[] lastMove;
         public int playsCount;
+        public int playsWithoutCapture;
 
-        public State(char[,] board, int currentPlayer, int[] lastMove, int playsCount){
+        public State(char[,] board, int currentPlayer, int[] lastMove, int playsCount, int playsWithoutCapture = 0){
             this.board = (char[,])board.Clone();
             this.currentPlayer = currentPlayer;
             this.lastMove = lastMove;
             this.playsCount = playsCount;
+            this.playsWithoutCapture = playsWithoutCapture;
         }
 
         public void print(){
@@ -29,20 +32,29 @@ namespace StateNS
             if(lastMove != null){
                 Console.WriteLine($"LastMove: [{lastMove[0]}][{lastMove[1]}] to [{lastMove[2]}][{lastMove[3]}]");
             }
-            //Console.WriteLine($"Plays Count: {playsCount}");
         }
 
-        public static State result(State old, int[] action){
-            State newState = new State(old.board,old.currentPlayer,old.lastMove,old.playsCount);
+        public static State result(State oldState, int[] action){
+            State newState = new State(oldState.board, oldState.currentPlayer, oldState.lastMove, oldState.playsCount, oldState.playsWithoutCapture);
             
-            char piece = newState.board[action[0],action[1]];
-            newState.board[action[0],action[1]] = Types.EMPTY;     
-            newState.board[action[2],action[3]] = piece;
+            if(RuleMachine.isAttackMove(action, newState.board)){
+                newState.playsWithoutCapture = 0;
+            }else {
+                newState.playsWithoutCapture++;
+            }
+
+            char piece = newState.board[action[0], action[1]];
+            newState.board[action[0], action[1]] = Types.EMPTY;
+            newState.board[action[2], action[3]] = piece;
             newState.currentPlayer = newState.currentPlayer == 1 ? 2 : 1;
             newState.lastMove = action;
             newState.playsCount++;
             
             return newState;
+        }
+
+        public bool checkDraw(){
+            return this.playsWithoutCapture >= 5;
         }
     }
 }
