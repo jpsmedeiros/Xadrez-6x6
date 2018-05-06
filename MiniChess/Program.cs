@@ -176,7 +176,7 @@ namespace MiniChess
             if(!RuleMachine.validateMove(coordinates, currentState.board, currentState.currentPlayer)){
                 return true;
             }
-            Console.WriteLine(RuleMachine.isCheck(currentState.board, currentState.currentPlayer, coordinates));
+            //Console.WriteLine(RuleMachine.isCheck(currentState.board, currentState.currentPlayer, coordinates));
             movePiece(coordinates);
             return false;
         }

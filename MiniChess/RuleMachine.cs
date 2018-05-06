@@ -42,20 +42,50 @@ namespace RuleMachineNS
 
         public static bool isValidForPiece(char piece, int[] coordinates, char[,] board, int currentPlayer){
             piece = Types.getPlayer1Piece(piece);
+            bool result;
             switch(piece){
                 case Types.KING:
-                    return isValidForKing(piece, coordinates, board, currentPlayer);
+                    result = isValidForKing(piece, coordinates, board, currentPlayer);
+                    break;
                 case Types.QUEEN:
-                    return isValidForQueen(piece, coordinates, board, currentPlayer);
+                    result = isValidForQueen(piece, coordinates, board, currentPlayer);
+                    break;
                 case Types.ROOK:
-                    return isValidForRook(piece, coordinates, board, currentPlayer);
+                    result = isValidForRook(piece, coordinates, board, currentPlayer);
+                    break;
                 case Types.BISHOP:
-                    return isValidForBishop(piece, coordinates, board, currentPlayer);
+                    result = isValidForBishop(piece, coordinates, board, currentPlayer);
+                    break;
                 case Types.PAWN:
-                    return isValidForPawn(piece, coordinates, board, currentPlayer);
+                    result = isValidForPawn(piece, coordinates, board, currentPlayer);
+                    break;
                 default:
                     return false;
             }
+            if(result){
+                StackTrace stackTrace = new StackTrace();
+                // Get calling method name
+                /*
+                Console.WriteLine("INICIO");
+                Console.WriteLine(stackTrace.GetFrame(3).GetMethod().Name);
+                Console.WriteLine(stackTrace.GetFrame(2).GetMethod().Name);
+                Console.WriteLine(stackTrace.GetFrame(1).GetMethod().Name);
+                Console.WriteLine("FIM");*/
+                if(stackTrace.GetFrame(3).GetMethod().Name == "isCheck"
+                   && stackTrace.GetFrame(2).GetMethod().Name == "possible_moves"){
+                      return result;  
+                }
+                int checkResult = isCheck(board, currentPlayer, coordinates);
+                if(checkResult == 1){
+                    Program.messageHandler("Movimento inválido, peça em xeque");
+                    return false;
+                }else if(checkResult == 2){
+                    int otherPlayer = currentPlayer == 1 ? 2 : 1;
+                    Console.WriteLine("Rei do jogador "+otherPlayer+" está em xeque");
+                }
+                Console.WriteLine("IS CHECK: "+checkResult);
+            }
+            return result;
         }
         public static bool isValidForKing(char piece, int[] coordinates, char[,] board, int currentPlayer){
             /*
@@ -72,18 +102,7 @@ namespace RuleMachineNS
             int movedLines = Math.Abs(linFinal - linInicial);
             int movedColumns = Math.Abs(colFinal - colInicial);
             if(movedLines < 2 && movedColumns < 2) {
-                int checkResult = isCheck(board, currentPlayer, coordinates);
                 return true;
-                if(checkResult != 0){
-                    return true;
-                }else{//essa jogada coloca meu rei em xeque
-                    if(checkResult == 1){
-                    Program.messageHandler("Movimento inválido para o Rei. Essa jogada coloca seu rei em xeque.");
-                    }else{
-                        Program.messageHandler("Movimento inválido para o Rei. Você continua em xeque após esse movimento.");
-                    }
-                    return false;
-                }
             }else{
                 Program.messageHandler("Movimento inválido para o Rei. Movimento maior que o possível.");
                 return false;
@@ -299,10 +318,10 @@ namespace RuleMachineNS
             Program.activateOrDeactivateMessageHandler();
             StackTrace stackTrace = new StackTrace();
 
-// Get calling method name
-Console.WriteLine(stackTrace.GetFrame(1).GetMethod().Name);
-             Console.WriteLine("CONTADOR: " +contador);
-             Console.WriteLine("QTD JOGADAS POSSIVEIS: "+contador2);
+            // Get calling method name
+            Console.WriteLine(stackTrace.GetFrame(1).GetMethod().Name);
+            Console.WriteLine("CONTADOR: " +contador);
+            Console.WriteLine("QTD JOGADAS POSSIVEIS: "+contador2);
             
             return moves;
         }
@@ -324,8 +343,6 @@ Console.WriteLine(stackTrace.GetFrame(1).GetMethod().Name);
             // ==> Verificar se movimento do jogador currentPlayer leva a um xeque do rei dele OK
             // ==> Verificar se movimento do jogador currentPlayer leva a um xeque do rei inimigo 
 
-
-            //PROBLEMA, peão se movimenta diferente em caso de ataque
             int otherPlayer = currentPlayer == 1 ? 2 : 1;
             State state = new State(board, otherPlayer, null, 0);
             if(move != null){//sigfica que quero avaliar um movimento
@@ -334,25 +351,18 @@ Console.WriteLine(stackTrace.GetFrame(1).GetMethod().Name);
             }//se move == null significa que quero saber se o estado atual está em xeque
             int[] kingPositionCurrentPlayer = findKingX(state.board, currentPlayer);
             int[] kingPositionOtherPlayer = findKingX(state.board, otherPlayer);
-            Console.WriteLine("111111");
-                        StackTrace stackTrace = new StackTrace();
 
-// Get calling method name
-Console.WriteLine(stackTrace.GetFrame(1).GetMethod().Name);
             LinkedList<int[]> possibleMoves = possible_moves(state);//movimentos possiveis do inimigo
-Console.WriteLine("222222");
             foreach(int[] possibleMove in possibleMoves){//possiveis movimentos do INIMIGO de currentPlayer
                 if(possibleMove[2] == kingPositionCurrentPlayer[0] && possibleMove[3] == kingPositionCurrentPlayer[1]){
                     //Program.messageHandler("Rei do jogador "+currentPlayer+" está em xeque");
                     return 1;//meu rei está em xeque se fizer essa jogada
                 }
             }
-            return 0;
             state = new State(state.board, currentPlayer, null, 0);
             possibleMoves = possible_moves(state);//meus movimentos possíveis
             foreach(int[] possibleMove in possibleMoves){
                 if(possibleMove[2] == kingPositionOtherPlayer[0] && possibleMove[3] == kingPositionOtherPlayer[1]){
-                    Program.messageHandler("Rei do jogador "+otherPlayer+" está em xeque");
                     return 2;
                 }
             }
