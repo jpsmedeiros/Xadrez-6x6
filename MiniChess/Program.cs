@@ -288,9 +288,6 @@ namespace MiniChess
         public static int evalSimples(char[,] atual){
             int p=0, b=0, t=0, q=0;
             //int k=0;
-            //char[,] board = new char[6, 6];
-            //board = State.board;
-            //Types comp = new Types();
             char chP = Char.ToLower(Types.PAWN);
             char chB = Char.ToLower(Types.BISHOP);
             char chR = Char.ToLower(Types.ROOK);
@@ -326,5 +323,55 @@ namespace MiniChess
             int eval = p + 3*b + 5*t + 9*q;
             return eval;
         }
+        public static int evalUtility(State estado){
+            if(estado.checkDraw()){
+                return 0;
+            }
+            int p=0, b=0, t=0, q=0;
+            //int k=0;
+            char chP = Char.ToLower(Types.PAWN);
+            char chB = Char.ToLower(Types.BISHOP);
+            char chR = Char.ToLower(Types.ROOK);
+            char chQ = Char.ToLower(Types.QUEEN);
+            for(int i=0; i<6; i++){
+                for(int j=0; j<6; j++){
+                    if(estado.board[i,j].Equals(chP)){
+                        p+=1;
+                    }
+                    if(estado.board[i,j].Equals(Types.PAWN)){
+                        p-=1;
+                    }
+                    if(estado.board[i,j].Equals(chB)){
+                        b+=1;
+                    }
+                    if(estado.board[i,j].Equals(Types.BISHOP)){
+                        b-=1;
+                    }
+                    if(estado.board[i,j].Equals(chR)){
+                        t+=1;
+                    }
+                    if(estado.board[i,j].Equals(Types.ROOK)){
+                        t-=1;
+                    }
+                    if(estado.board[i,j].Equals(chQ)){
+                        q+=1;
+                    }
+                    if(estado.board[i,j].Equals(Types.QUEEN)){
+                        q-=1;
+                    }
+                }
+            }
+            int util = p + 3*b + 5*t + 9*q;
+            if(gameIsOver(estado)){
+                if(getWinner(estado)==1){
+                    util -= 100;
+                }
+                else
+                    util += 100;
+            }   
+            return util;
+            
+        }
+            
     }
 }
