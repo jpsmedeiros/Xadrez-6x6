@@ -2,6 +2,7 @@
 using StateNS;
 using TypesNS;
 using RuleMachineNS;
+using AINS;
 
 namespace MiniChess
 {
@@ -12,6 +13,10 @@ namespace MiniChess
         public static State currentState;
         private static bool messageHandlerActive = true;
         public static Types types = new Types();
+
+        public static AI ia1 = new AI(2,2);
+        public static AI ia2 = new AI(1,2);
+    
         
         static void Main(string[] args)
         {
@@ -21,10 +26,12 @@ namespace MiniChess
 
             // game loop
             while(game){
-                printBoard();
+                printBoard();                
                 //RuleMachine.possible_moves(currentState);
                 movementInterface();
                 //printBoard();
+
+                Console.WriteLine("Eval: " + evalSimples(currentState.board));
 
                 if (gameIsOver(currentState)){
                     printBoard();
@@ -37,7 +44,7 @@ namespace MiniChess
         public static void initializeGame(){
             char[,] new_board = initializeBoard();
             int initialPlayer = 1;
-            currentState = new State(new_board, initialPlayer, null);
+            currentState = new State(new_board, initialPlayer, null, 0);
             //Console.Clear();
             game = true;
         }
@@ -79,8 +86,7 @@ namespace MiniChess
                         //TODO
                         Console.WriteLine("Esperando input da IA...");
                         //CHAMA A IA
-                        //input = callIAAction(...);
-                        input = "0 0 0 0";//Só para tirar o erro
+                        input = ia1.play(currentState);
                     }
                 }else{// IA vs IA => sempre chama a IA
                     //TODO
@@ -184,6 +190,7 @@ namespace MiniChess
             currentState.board[coordinates[0], coordinates[1]] = Types.EMPTY;
             currentState.board[coordinates[2], coordinates[3]] = piece;
             changeCurrentPlayer();
+            currentState.playsCount++;
         }
 
         public static char[,] fillBoardPieces(char[,] board){//prenche as peças nas suas posições iniciais do jogo
@@ -276,6 +283,47 @@ namespace MiniChess
             }
             
             return -1;
+        }
+        public static int evalSimples(char[,] atual){
+            int p=0, b=0, t=0, q=0;
+            //int k=0;
+            //char[,] board = new char[6, 6];
+            //board = State.board;
+            //Types comp = new Types();
+            char chP = Char.ToLower(Types.PAWN);
+            char chB = Char.ToLower(Types.BISHOP);
+            char chR = Char.ToLower(Types.ROOK);
+            char chQ = Char.ToLower(Types.QUEEN);
+            for(int i=0; i<6; i++){
+                for(int j=0; j<6; j++){
+                    if(atual[i,j].Equals(chP)){
+                        p+=1;
+                    }
+                    if(atual[i,j].Equals(Types.PAWN)){
+                        p-=1;
+                    }
+                    if(atual[i,j].Equals(chB)){
+                        b+=1;
+                    }
+                    if(atual[i,j].Equals(Types.BISHOP)){
+                        b-=1;
+                    }
+                    if(atual[i,j].Equals(chR)){
+                        t+=1;
+                    }
+                    if(atual[i,j].Equals(Types.ROOK)){
+                        t-=1;
+                    }
+                    if(atual[i,j].Equals(chQ)){
+                        q+=1;
+                    }
+                    if(atual[i,j].Equals(Types.QUEEN)){
+                        q-=1;
+                    }
+                }
+            }
+            int eval = p + 3*b + 5*t + 9*q;
+            return eval;
         }
     }
 }
