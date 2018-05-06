@@ -323,8 +323,8 @@ namespace MiniChess
             int eval = p + 3*b + 5*t + 9*q;
             return eval;
         }
-        public static int evalUtility(State estado){
-            if(estado.checkDraw()){
+        public static int evalUtility(State state){
+            if(state.checkDraw()){
                 return 0;
             }
             int p=0, b=0, t=0, q=0;
@@ -335,40 +335,41 @@ namespace MiniChess
             char chQ = Char.ToLower(Types.QUEEN);
             for(int i=0; i<6; i++){
                 for(int j=0; j<6; j++){
-                    if(estado.board[i,j].Equals(chP)){
+                    if(state.board[i,j].Equals(chP)){
                         p+=1;
                     }
-                    if(estado.board[i,j].Equals(Types.PAWN)){
+                    if(state.board[i,j].Equals(Types.PAWN)){
                         p-=1;
                     }
-                    if(estado.board[i,j].Equals(chB)){
+                    if(state.board[i,j].Equals(chB)){
                         b+=1;
                     }
-                    if(estado.board[i,j].Equals(Types.BISHOP)){
+                    if(state.board[i,j].Equals(Types.BISHOP)){
                         b-=1;
                     }
-                    if(estado.board[i,j].Equals(chR)){
+                    if(state.board[i,j].Equals(chR)){
                         t+=1;
                     }
-                    if(estado.board[i,j].Equals(Types.ROOK)){
+                    if(state.board[i,j].Equals(Types.ROOK)){
                         t-=1;
                     }
-                    if(estado.board[i,j].Equals(chQ)){
+                    if(state.board[i,j].Equals(chQ)){
                         q+=1;
                     }
-                    if(estado.board[i,j].Equals(Types.QUEEN)){
+                    if(state.board[i,j].Equals(Types.QUEEN)){
                         q-=1;
                     }
                 }
             }
             int util = p + 3*b + 5*t + 9*q;
-            if(gameIsOver(estado)){
-                if(getWinner(estado)==1){
+            if(gameIsOver(state)){
+                if(getWinner(state)==1){
                     util -= 100;
                 }
                 else
                     util += 100;
             }   
+            util = util/(state.playsCount);
             return util;
             
         }
