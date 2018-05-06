@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TypesNS;
 using StateNS;
 using MiniChess;
+using System.Diagnostics;
 
 namespace RuleMachineNS
 {
@@ -43,20 +44,20 @@ namespace RuleMachineNS
             piece = Types.getPlayer1Piece(piece);
             switch(piece){
                 case Types.KING:
-                    return isValidForKing(piece, coordinates, board);
+                    return isValidForKing(piece, coordinates, board, currentPlayer);
                 case Types.QUEEN:
-                    return isValidForQueen(piece, coordinates, board);
+                    return isValidForQueen(piece, coordinates, board, currentPlayer);
                 case Types.ROOK:
-                    return isValidForRook(piece, coordinates, board);
+                    return isValidForRook(piece, coordinates, board, currentPlayer);
                 case Types.BISHOP:
-                    return isValidForBishop(piece, coordinates, board);
+                    return isValidForBishop(piece, coordinates, board, currentPlayer);
                 case Types.PAWN:
                     return isValidForPawn(piece, coordinates, board, currentPlayer);
                 default:
                     return false;
             }
         }
-        public static bool isValidForKing(char piece, int[] coordinates, char[,] board){
+        public static bool isValidForKing(char piece, int[] coordinates, char[,] board, int currentPlayer){
             /*
             The king piece can move one single square in any direction.
             The king cannot move onto a square that is currently occupied by a piece from its own team.
@@ -71,15 +72,24 @@ namespace RuleMachineNS
             int movedLines = Math.Abs(linFinal - linInicial);
             int movedColumns = Math.Abs(colFinal - colInicial);
             if(movedLines < 2 && movedColumns < 2) {
+                int checkResult = isCheck(board, currentPlayer, coordinates);
                 return true;
+                if(checkResult != 0){
+                    return true;
+                }else{//essa jogada coloca meu rei em xeque
+                    if(checkResult == 1){
+                    Program.messageHandler("Movimento inválido para o Rei. Essa jogada coloca seu rei em xeque.");
+                    }else{
+                        Program.messageHandler("Movimento inválido para o Rei. Você continua em xeque após esse movimento.");
+                    }
+                    return false;
+                }
             }else{
                 Program.messageHandler("Movimento inválido para o Rei. Movimento maior que o possível.");
                 return false;
             }
-            
-            //return isCheck();//TODO
         }
-        public static bool isValidForQueen(char piece, int[] coordinates, char[,] board){
+        public static bool isValidForQueen(char piece, int[] coordinates, char[,] board, int currentPlayer){
             /*
             The queen can move in any direction on a straight or diagonal path.
             The queen cannot "jump" over any piece on the board, so its movements are restricted to any direction of unoccupied squares.
@@ -135,7 +145,7 @@ namespace RuleMachineNS
             Program.messageHandler("ERRO: Movimento inválido para"+pieceName+". MOVIMENTO NÃO TRATADO.");
             return false;
         }
-        public static bool isValidForRook(char piece, int[] coordinates, char[,] board){
+        public static bool isValidForRook(char piece, int[] coordinates, char[,] board, int currentPlayer){
             /*
             The rook piece can move forward, backward, left or right at any time.
             The rook piece can move anywhere from 1 to 5 squares in any direction, so long as it is not obstructed by any other piece.
@@ -194,7 +204,7 @@ namespace RuleMachineNS
             //Program.messageHandler("ERRO: Movimento inválido para "+pieceName+". MOVIMENTO NÃO TRATADO.");
             //return false;//TODO
         }
-        public static bool isValidForBishop(char piece, int[] coordinates, char[,] board){
+        public static bool isValidForBishop(char piece, int[] coordinates, char[,] board, int currentPlayer){
             /*
             The bishop can move in any direction diagonally, so long as it is not obstructed by another piece.
             The bishop piece cannot move past any piece that is obstructing its path.
@@ -251,10 +261,6 @@ namespace RuleMachineNS
             char piece = board[coordinates[2], coordinates[3]];
             return !Types.isEmpty(piece);
         }
-        public static bool isCheck(){
-            return false;
-        }
-
         public static LinkedList<int[]> possible_moves(State state){
             LinkedList<int[]> moves = new LinkedList<int[]>();
             char currentPiece;
@@ -291,9 +297,12 @@ namespace RuleMachineNS
                 }
             }
             Program.activateOrDeactivateMessageHandler();
-            
-            // Console.WriteLine("CONTADOR: " +contador);
-            // Console.WriteLine("QTD JOGADAS POSSIVEIS: "+contador2);
+            StackTrace stackTrace = new StackTrace();
+
+// Get calling method name
+Console.WriteLine(stackTrace.GetFrame(1).GetMethod().Name);
+             Console.WriteLine("CONTADOR: " +contador);
+             Console.WriteLine("QTD JOGADAS POSSIVEIS: "+contador2);
             
             return moves;
         }
@@ -304,6 +313,72 @@ namespace RuleMachineNS
             newMove[2] = lin2;
             newMove[3] = col2;
             return newMove;
+        }
+        public static int isCheck(char[,] board, int currentPlayer, int[] move){
+            // 0 = não leva a xeque
+            // 1 = leva a xeque de rei de currentPlayer
+            // 2 = leva a xeque de rei inimigo
+            //O QUE EU QUERO SABER
+            // SE EU FIZER ESTE MOVIMENTO MEU REI ESTÁ EM XEQUE?
+            // SE EU FIZER ESTE MOVIMENTO O REI DO OUTRO ESTÁ EM XEQUE?
+            // ==> Verificar se movimento do jogador currentPlayer leva a um xeque do rei dele OK
+            // ==> Verificar se movimento do jogador currentPlayer leva a um xeque do rei inimigo 
+
+
+            //PROBLEMA, peão se movimenta diferente em caso de ataque
+            int otherPlayer = currentPlayer == 1 ? 2 : 1;
+            State state = new State(board, otherPlayer, null, 0);
+            if(move != null){//sigfica que quero avaliar um movimento
+                state.board[move[2], move[3]] = board[move[0], move[1]];//cria tabuleiro futuro a partir de movimento
+                state.board[move[0], move[1]] = Types.EMPTY;
+            }//se move == null significa que quero saber se o estado atual está em xeque
+            int[] kingPositionCurrentPlayer = findKingX(state.board, currentPlayer);
+            int[] kingPositionOtherPlayer = findKingX(state.board, otherPlayer);
+            Console.WriteLine("111111");
+                        StackTrace stackTrace = new StackTrace();
+
+// Get calling method name
+Console.WriteLine(stackTrace.GetFrame(1).GetMethod().Name);
+            LinkedList<int[]> possibleMoves = possible_moves(state);//movimentos possiveis do inimigo
+Console.WriteLine("222222");
+            foreach(int[] possibleMove in possibleMoves){//possiveis movimentos do INIMIGO de currentPlayer
+                if(possibleMove[2] == kingPositionCurrentPlayer[0] && possibleMove[3] == kingPositionCurrentPlayer[1]){
+                    //Program.messageHandler("Rei do jogador "+currentPlayer+" está em xeque");
+                    return 1;//meu rei está em xeque se fizer essa jogada
+                }
+            }
+            return 0;
+            state = new State(state.board, currentPlayer, null, 0);
+            possibleMoves = possible_moves(state);//meus movimentos possíveis
+            foreach(int[] possibleMove in possibleMoves){
+                if(possibleMove[2] == kingPositionOtherPlayer[0] && possibleMove[3] == kingPositionOtherPlayer[1]){
+                    Program.messageHandler("Rei do jogador "+otherPlayer+" está em xeque");
+                    return 2;
+                }
+            }
+            return 0;
+        }
+        public static int[] findKingX(char[,] board, int currentPlayer){
+            int[] position = new int[2];
+            int lin, col, size;
+            size = board.GetLength(0);
+            char currentPiece;
+            for(lin = 0 ; lin < size ; lin++){//procura pela posição do rei
+                for(col = 0; col < size; col++){
+                    currentPiece = board[lin, col];
+                    if(Types.getPlayer1Piece(currentPiece) == Types.KING){//é rei
+                        if(Types.isPlayerX(currentPiece, currentPlayer)){//é do jogador atual
+                            position[0] = lin;
+                            position[1] = col;
+                            return position;
+                        }
+                    }
+                }
+            }
+            position[0] = -1;
+            position[1] = -1;
+            Program.messageHandler("ERRO. rei não encontrado");
+            return position;
         }
     }
 }

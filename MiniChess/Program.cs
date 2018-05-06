@@ -176,6 +176,7 @@ namespace MiniChess
             if(!RuleMachine.validateMove(coordinates, currentState.board, currentState.currentPlayer)){
                 return true;
             }
+            Console.WriteLine(RuleMachine.isCheck(currentState.board, currentState.currentPlayer, coordinates));
             movePiece(coordinates);
             return false;
         }
@@ -241,7 +242,7 @@ namespace MiniChess
         }
         public static void messageHandler(String msg){
             if(messageHandlerActive){
-                Console.WriteLine(msg);
+                //Console.WriteLine(msg);
             }
         }
 
