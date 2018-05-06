@@ -244,7 +244,7 @@ namespace MiniChess
         }
         public static void messageHandler(String msg){
             if(messageHandlerActive){
-                //Console.WriteLine(msg);
+                Console.WriteLine(msg);
             }
         }
 
