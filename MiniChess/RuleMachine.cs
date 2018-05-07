@@ -74,7 +74,7 @@ namespace RuleMachineNS
                     return false;
                 }else if(checkResult == 2){
                     int otherPlayer = currentPlayer == 1 ? 2 : 1;
-                    Console.WriteLine("PROBLEMA NO ISCHECK!!! Rei do jogador "+otherPlayer+" está em xeque");
+                    Program.messageHandler("Rei do jogador "+otherPlayer+" está em xeque");
                 }
             }
             return result;
@@ -284,7 +284,8 @@ namespace RuleMachineNS
             */
             currentMove = fillMove(currentMove, -1, -1, -1, -1);
             size = state.board.GetLength(0);
-            Program.activateOrDeactivateMessageHandler();
+            Guid key = Guid.NewGuid();
+            Program.deactivateMessaHandler(key);
             for(lin1 = 0 ; lin1 < size ; lin1++){//pega todas as peças do jogador
                 for(col1 = 0; col1 < size; col1++){
                     currentPiece = state.board[lin1, col1];
@@ -301,7 +302,7 @@ namespace RuleMachineNS
                     }
                 }
             }
-            Program.activateOrDeactivateMessageHandler();
+            Program.activateMessaHandler(key);
             
             return moves;
         }

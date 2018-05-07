@@ -14,6 +14,10 @@ namespace MiniChess
         private static bool messageHandlerActive = true;
         public static Types types = new Types();
 
+        public static Guid messageHandlerKey;
+
+        public static bool messageHandlerKeyBlock = false;
+
         public static AI ia1 = new AI(2,2);
         public static AI ia2 = new AI(1,2);
     
@@ -244,14 +248,26 @@ namespace MiniChess
         }
         public static void messageHandler(String msg){
             if(messageHandlerActive){
-                //Console.WriteLine(msg);
+                Console.WriteLine(msg);
             }
         }
 
+        public static void activateMessaHandler(Guid key){
+            if(key.CompareTo(messageHandlerKey) == 0){
+                messageHandlerActive = true;
+                messageHandlerKeyBlock = false;
+            }
+        }
+        public static void deactivateMessaHandler(Guid key){
+            if(!messageHandlerKeyBlock){
+                messageHandlerKey = key;
+                messageHandlerKeyBlock = true;
+            }
+            messageHandlerActive = false;
+        }
         public static void activateOrDeactivateMessageHandler(){
             messageHandlerActive = !messageHandlerActive;
         }
-
         public static void changeCurrentPlayer(){
             currentState.currentPlayer = currentState.currentPlayer == 1 ? 2 : 1;
             return;
