@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using StateNS;
+using TypesNS;
 using RuleMachineNS;
 using MiniChess;
 
@@ -134,7 +135,7 @@ namespace AINS
                 case 1:
                     return utility(state);
                 case 2:
-                    return Program.evalSimples(state.board);
+                    return evalSimples(state);
                 default:
                     return utility(state);
             }
@@ -170,6 +171,184 @@ namespace AINS
             else{
                 return true;
             }
+        }
+
+        //função de avaliação simples
+        public static int evalSimples(State state){
+            int p=0, b=0, t=0, q=0;
+            int eval = 0;
+            // char chP = Char.ToLower("P");
+            // char "b" = Char.ToLower("B");
+            // char "t" = Char.ToLower("T");
+            // char "q" = Char.ToLower("Q");
+
+            switch(Program.getCurrentPlayer()){
+                case 1:
+                    for(int i=0; i<6; i++){
+                        for(int j=0; j<6; j++){
+                            switch(state.board[i,j]){
+                                case 'p':
+                                    p-=1;
+                                    break;
+                                case 'P':
+                                    p+=1;
+                                    break;
+                                case 'b':
+                                    b-=1;
+                                    break;
+                                case 'B':
+                                    b+=1;
+                                    break;
+                                case't':
+                                    t-=1;
+                                    break;
+                                case 'T':
+                                    t+=1;
+                                    break;
+                                case 'q':
+                                    q-=1;
+                                    break;
+                                case 'Q':
+                                    q+=1;
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+                case 2:
+                    for(int i=0; i<6; i++){
+                        for(int j=0; j<6; j++){
+                            switch(state.board[i,j]){
+                                case 'p':
+                                    p+=1;
+                                    break;
+                                case 'P':
+                                    p-=1;
+                                    break;
+                                case 'b':
+                                    b+=1;
+                                    break;
+                                case 'B':
+                                    b-=1;
+                                    break;
+                                case 't':
+                                    t+=1;
+                                    break;
+                                case 'T':
+                                    t-=1;
+                                    break;
+                                case 'q':
+                                    q+=1;
+                                    break;
+                                case 'Q':
+                                    q-=1;
+                                    break;
+                            }
+                        }
+                    }
+                    break;
+            }
+            eval = p + 3*b + 5*t + 9*q;
+            return eval;
+        }
+        //função de utilidade de estado final
+        public static int evalUtility(State state){
+            if(state.checkDraw()){
+                return 0;
+            }
+
+            int p=0, b=0, t=0, q=0;
+            int util =0;
+            // char "p" = Char.ToLower("P");
+            // char "b" = Char.ToLower("B");
+            // char "t" = Char.ToLower("T");
+            // char "q" = Char.ToLower("Q");
+            
+            if(Program.gameIsOver(state)){
+                switch(Program.getCurrentPlayer()){
+                    case 1:
+                        for(int i=0; i<6; i++){
+                            for(int j=0; j<6; j++){
+                                switch(state.board[i,j]){
+                                    case 'p':
+                                        p-=1;
+                                        break;
+                                    case 'P':
+                                        p+=1;
+                                        break;
+                                    case 'b':
+                                        b-=1;
+                                        break;
+                                    case 'B':
+                                        b+=1;
+                                        break;
+                                    case 't':
+                                        t-=1;
+                                        break;
+                                    case 'T':
+                                        t+=1;
+                                        break;
+                                    case 'q':
+                                        q-=1;
+                                        break;
+                                    case 'Q':
+                                        q+=1;
+                                        break;
+                                }
+                            }
+                        }
+                        if(Program.getWinner(state)==2){
+                            util -= 100;
+                        }
+                        else{
+                            util += 100;
+                        }
+                        break;
+                    case 2:
+                        for(int i=0; i<6; i++){
+                            for(int j=0; j<6; j++){
+                                switch(state.board[i,j]){
+                                    case 'p':
+                                        p+=1;
+                                        break;
+                                    case 'P':
+                                        p-=1;
+                                        break;
+                                    case 'b':
+                                        b+=1;
+                                        break;
+                                    case 'B':
+                                        b-=1;
+                                        break;
+                                    case 't':
+                                        t+=1;
+                                        break;
+                                    case 'T':
+                                        t-=1;
+                                        break;
+                                    case 'q':
+                                        q+=1;
+                                        break;
+                                    case 'Q':
+                                        q-=1;
+                                        break;
+                                }
+                            }
+                        }
+                        if(Program.getWinner(state)==1){
+                            util -= 100;
+                        }
+                        else{
+                            util += 100;
+                        }
+                        break;
+                }
+                
+            }   
+            util += p + 3*b + 5*t + 9*q;
+            util = util/(state.playsCount);
+            return util;
+            
         }
 
     }
