@@ -266,11 +266,12 @@ namespace MiniChess
         }
 
         public static bool gameIsOver(State state){
-            int number_of_kings = 0;
+            return RuleMachine.isCheckmate(state) || state.checkDraw();
+            /*int number_of_kings = 0;
             foreach (char piece in state.board)
                 if (Types.getPlayer1Piece(piece) == Types.KING) number_of_kings++;
         
-            return number_of_kings < 2 || state.checkDraw();
+            return number_of_kings < 2 || state.checkDraw();*/
         }
 
         // retorna -1 se o jogo não tiver ganhador ainda
