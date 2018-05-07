@@ -14,9 +14,13 @@ namespace MiniChess
         public static bool messageHandlerActive = true;
         public static Types types = new Types();
 
-        public static AI ia1 = new AI(2,2);
-        public static AI ia2 = new AI(1,2);
-    
+        public static Guid messageHandlerKey;
+
+        public static bool messageHandlerKeyBlock = false;
+
+        public static AI ia1 = new AI(1,1);
+        public static AI ia2 = new AI(2,2);
+        
         
         static void Main(string[] args)
         {
@@ -29,7 +33,7 @@ namespace MiniChess
                 printBoard();                
                 movementInterface();
 
-                Console.WriteLine("Eval: " + AI.evalSimples(currentState));
+                Console.WriteLine("Eval: " + AI.eval(currentState));
 
                 if (gameIsOver(currentState)){
                     printBoard();
@@ -80,17 +84,17 @@ namespace MiniChess
                         Console.WriteLine("Movimente sua peça:\n");
                         input = Console.ReadLine();
                     }else{
-                        //TODO
                         Console.WriteLine("Esperando input da IA...");
-                        //CHAMA A IA
-                        input = ia1.play(currentState);
+                        input = ia2.play(currentState);
                     }
                 }else{// IA vs IA => sempre chama a IA
-                    //TODO
-                    Console.WriteLine("Esperando input da IA " + currentState.currentPlayer +"...");
-                    //CHAMA A IA
-                    //input = callIAAction(...);
-                    input = "0 0 0 0";//Só para tirar o erro
+                    if(currentState.currentPlayer == 1){
+                        Console.WriteLine("Esperando input da IA1...\n");
+                        input = ia1.play(currentState);
+                    }else{
+                        Console.WriteLine("Esperando input da IA2...");
+                        input = ia2.play(currentState);
+                    }
                 }
 
             }while(handleMovementInput(input));
@@ -245,10 +249,22 @@ namespace MiniChess
             }
         }
 
+        public static void activateMessaHandler(Guid key){
+            if(key.CompareTo(messageHandlerKey) == 0){
+                messageHandlerActive = true;
+                messageHandlerKeyBlock = false;
+            }
+        }
+        public static void deactivateMessaHandler(Guid key){
+            if(!messageHandlerKeyBlock){
+                messageHandlerKey = key;
+                messageHandlerKeyBlock = true;
+            }
+            messageHandlerActive = false;
+        }
         public static void activateOrDeactivateMessageHandler(){
             messageHandlerActive = !messageHandlerActive;
         }
-
         public static void changeCurrentPlayer(){
             currentState.currentPlayer = currentState.currentPlayer == 1 ? 2 : 1;
             return;
@@ -263,11 +279,12 @@ namespace MiniChess
         }
 
         public static bool gameIsOver(State state){
-            int number_of_kings = 0;
+            return RuleMachine.isCheckmate(state) || state.checkDraw();
+            /*int number_of_kings = 0;
             foreach (char piece in state.board)
                 if (Types.getPlayer1Piece(piece) == Types.KING) number_of_kings++;
         
-            return number_of_kings < 2 || state.checkDraw();
+            return number_of_kings < 2 || state.checkDraw();*/
         }
 
         // retorna -1 se o jogo não tiver ganhador ainda

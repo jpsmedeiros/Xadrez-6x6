@@ -69,7 +69,7 @@ namespace AINS
         }
 
         public int max_value(State state, int alfa, int beta){
-            if(cut(state)){
+            if(cutoff_test(state)){
                 return eval(state);
             }
             
@@ -100,7 +100,7 @@ namespace AINS
         }
 
         public int min_value(State state, int alfa, int beta){
-            if(cut(state)){
+            if(cutoff_test(state)){
                 return eval(state);
             }
             
@@ -133,42 +133,90 @@ namespace AINS
         public int eval(State state){
             switch(this.type){
                 case 1:
-                    return utility(state);
+                    return eval1(state);
                 case 2:
-                    return evalSimples(state);
+                    return eval2(state);
                 default:
-                    return utility(state);
-            }
-
-        }
-
-        // Utility avalia apenas estados terminais
-        public int utility(State state){
-            if(state.currentPlayer == playerId){
-                return Int32.MinValue;
-            }
-            else{
-                return Int32.MaxValue;
+                    return eval1(state);
             }
         }
 
-        public bool cut(State state){
-            switch(this.type){
-                case 1:
-                    return false;
-                case 2:
-                    return cutoff_test(state);
-                default:
-                    return false;
-            }
-        }
+        //Utility avalia apenas estados terminais
+        //public int utility(State state){
+        //    if(state.currentPlayer == playerId){
+        //        return Int32.MinValue;
+        //    }
+        //    else{
+        //        return Int32.MaxValue;
+        //    }
+        //}
+
+        //public bool cut(State state){
+        //    switch(this.type){
+        //        case 1:
+        //            return false;
+        //        case 2:
+        //            return cutoff_test(state);
+        //        default:
+        //            return false;
+        //    }
+        //}
 
         public bool cutoff_test(State state){
             return state.playsCount - Program.currentState.playsCount > 3;   
         }
 
+        public static int evalKingSafety(State state){
+            for(int i=-1; i<=1; i++){
+                for(int j=-1; j<=1; j++){
+                    //TODO
+                    //isCheck
+                    //RuleMachine.isValidForPiece();
+                }
+            }
+            return 0;
+        }
+
+        public static int evalMobility(State state){
+            LinkedList<int[]> moves = RuleMachine.possible_moves(state);
+            return moves.Count;
+        }
+
+        public static int evalCenterControl(State state){
+            int count=0;
+            char piece;
+            for(int i=2; i<=3; i++){
+                for(int j=2; j<=3; j++){
+                    if(Program.getCurrentPlayer()==1){
+                        piece = state.board[i,j];
+                        if(!(piece=='0')){
+                            if(Char.IsUpper(piece)){
+                                count+=1;
+                            }
+                            else{
+                                count-=1;
+                            }
+                        }
+                    }
+                    else{
+                        piece = state.board[i,j];
+                        if(!(piece=='0')){
+                            if(Char.IsLower(piece)){
+                                count+=1;
+                            }
+                            else{
+                                count-=1;
+                            }
+                        }
+                    }
+                }
+            }
+            return count;
+        }   
+
+
         //função de avaliação simples
-        public static int evalSimples(State state){
+        public static int evalMaterial(State state){
             int p=0, b=0, t=0, q=0;
             int eval = 0;
             // char chP = Char.ToLower("P");
@@ -193,7 +241,7 @@ namespace AINS
                                 case 'B':
                                     b+=1;
                                     break;
-                                case't':
+                                case 't':
                                     t-=1;
                                     break;
                                 case 'T':
@@ -245,105 +293,47 @@ namespace AINS
             eval = p + 3*b + 5*t + 9*q;
             return eval;
         }
-        //função de utilidade de estado final
-        public static int evalUtility(State state){
+
+        //funcao de avaliacao usando material e quantidade de jogadas
+        public static int eval1(State state){
             if(state.checkDraw()){
                 return 0;
             }
 
             int p=0, b=0, t=0, q=0;
-            int util =0;
+            int util=0, winner=-1;
             // char "p" = Char.ToLower("P");
             // char "b" = Char.ToLower("B");
             // char "t" = Char.ToLower("T");
             // char "q" = Char.ToLower("Q");
             
-            if(Program.gameIsOver(state)){
-                switch(Program.getCurrentPlayer()){
-                    case 1:
-                        for(int i=0; i<6; i++){
-                            for(int j=0; j<6; j++){
-                                switch(state.board[i,j]){
-                                    case 'p':
-                                        p-=1;
-                                        break;
-                                    case 'P':
-                                        p+=1;
-                                        break;
-                                    case 'b':
-                                        b-=1;
-                                        break;
-                                    case 'B':
-                                        b+=1;
-                                        break;
-                                    case 't':
-                                        t-=1;
-                                        break;
-                                    case 'T':
-                                        t+=1;
-                                        break;
-                                    case 'q':
-                                        q-=1;
-                                        break;
-                                    case 'Q':
-                                        q+=1;
-                                        break;
-                                }
-                            }
-                        }
-                        if(Program.getWinner(state)==2){
-                            util -= 100;
-                        }
-                        else{
-                            util += 100;
-                        }
-                        break;
-                    case 2:
-                        for(int i=0; i<6; i++){
-                            for(int j=0; j<6; j++){
-                                switch(state.board[i,j]){
-                                    case 'p':
-                                        p+=1;
-                                        break;
-                                    case 'P':
-                                        p-=1;
-                                        break;
-                                    case 'b':
-                                        b+=1;
-                                        break;
-                                    case 'B':
-                                        b-=1;
-                                        break;
-                                    case 't':
-                                        t+=1;
-                                        break;
-                                    case 'T':
-                                        t-=1;
-                                        break;
-                                    case 'q':
-                                        q+=1;
-                                        break;
-                                    case 'Q':
-                                        q-=1;
-                                        break;
-                                }
-                            }
-                        }
-                        if(Program.getWinner(state)==1){
-                            util -= 100;
-                        }
-                        else{
-                            util += 100;
-                        }
-                        break;
+            util = evalMaterial(state);
+            winner = Program.getWinner(state);
+            if((Program.getCurrentPlayer())==1){
+                if(winner==1){
+                    util += 100;
+                }                        
+                else{
+                    util -= 100;
                 }
-                
-            }   
+            }
+            else{
+                if(winner==2){
+                    util += 100;
+                }
+                else{
+                    util -= 100;
+                }
+            }
+               
             util += p + 3*b + 5*t + 9*q;
             util = util/(state.playsCount);
             return util;
-            
         }
-
+    
+        public static int eval2(State state){
+            int c1=10, c2=40, c3=50;
+            return ( (c1*evalCenterControl(state)) + (c2*evalMaterial(state)) + (c3*evalMobility(state)) )/100; 
+        }
     }
 }

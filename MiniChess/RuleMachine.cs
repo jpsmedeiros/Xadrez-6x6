@@ -19,7 +19,6 @@ namespace RuleMachineNS
                 }
             }
             char piece = board[coordinates[0], coordinates[1]];
-            //Console.WriteLine("PEÇA SENDO AVALIADA: "+ piece);
             if(Types.isEmpty(piece)){
                 Program.messageHandler("Casa vazia, tente selecionar outra casa");
                 return false;
@@ -64,13 +63,6 @@ namespace RuleMachineNS
             }
             if(result){
                 StackTrace stackTrace = new StackTrace();
-                // Get calling method name
-                /*
-                Console.WriteLine("INICIO");
-                Console.WriteLine(stackTrace.GetFrame(3).GetMethod().Name);
-                Console.WriteLine(stackTrace.GetFrame(2).GetMethod().Name);
-                Console.WriteLine(stackTrace.GetFrame(1).GetMethod().Name);
-                Console.WriteLine("FIM");*/
                 if(stackTrace.GetFrame(3).GetMethod().Name == "isCheck"
                    && stackTrace.GetFrame(2).GetMethod().Name == "possible_moves"){
                       return result;  
@@ -134,7 +126,10 @@ namespace RuleMachineNS
             colInicial = coordinates[1];
             linFinal = coordinates[2];
             colFinal = coordinates[3];
+<<<<<<< HEAD
+=======
 
+>>>>>>> 639a3b6803cfccd088c0064f1435f9a4ceda5925
             if((linInicial < linFinal) || (colInicial < colFinal)){
                 moveOne = 1;
             }else{
@@ -293,16 +288,14 @@ namespace RuleMachineNS
             */
             currentMove = fillMove(currentMove, -1, -1, -1, -1);
             size = state.board.GetLength(0);
-            int contador = 0;
-            int contador2 = 0;
-            Program.activateOrDeactivateMessageHandler();
+            Guid key = Guid.NewGuid();
+            Program.deactivateMessaHandler(key);
             for(lin1 = 0 ; lin1 < size ; lin1++){//pega todas as peças do jogador
                 for(col1 = 0; col1 < size; col1++){
                     currentPiece = state.board[lin1, col1];
                     if(Types.isPlayerX(currentPiece, state.currentPlayer)){//é peça do jogador
                         for(lin2 = 0; lin2 < size ; lin2++){//verifica para todas as casas do tabuleiro se um movimento para aquela casa é válido
                             for(col2 = 0; col2 < size ; col2++){
-                                contador++;
                                 currentMove = fillMove(currentMove, lin1, col1, lin2, col2);
                                 if(validateMove(currentMove, state.board, state.currentPlayer)){//movimento é válido
                                     moves.AddLast(currentMove);//coloca na lista de movimentos válidos
@@ -314,7 +307,7 @@ namespace RuleMachineNS
                     }
                 }
             }
-            Program.activateOrDeactivateMessageHandler();
+            Program.activateMessaHandler(key);
             
             return moves;
         }
@@ -340,7 +333,7 @@ namespace RuleMachineNS
             State state = new State(board, otherPlayer, null, 0);
             if(move != null){//sigfica que quero avaliar um movimento
                 state.board[move[2], move[3]] = board[move[0], move[1]];//cria tabuleiro futuro a partir de movimento
-                state.board[move[0], move[1]] = Types.EMPTY;
+                state.board[move[0], move[1]] = Types.EMPTY; // PROBLEMA AQUI colocar o 0 está fazendo mostrar mensagem de xeque indevidamente
             }//se move == null significa que quero saber se o estado atual está em xeque
             int[] kingPositionCurrentPlayer = findKingX(state.board, currentPlayer);
             int[] kingPositionOtherPlayer = findKingX(state.board, otherPlayer);
@@ -361,7 +354,18 @@ namespace RuleMachineNS
             }
             return 0;
         }
-        
+        public static bool isCheckmate(State state){
+            LinkedList<int[]> possibleMoves = possible_moves(state);
+            foreach(int[] possibleMove in possibleMoves){
+                if(isCheck(state.board, state.currentPlayer, possibleMove) != 1){//se movimento possibleMove não leva xeque do meu rei(=1)
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /*ver se é cheque mate, eu pego todos os movimentos possíveis do jogador que está com o rei sob xeque e vejo se todos deles o inCheck(...) 
+        retorna verdadeiro, se para todos os movimentos possíveis do jogador ele ainda estiver em xeque, é xeque mate */
         public static int[] findKingX(char[,] board, int currentPlayer){
             int[] position = new int[2];
             int lin, col, size;
