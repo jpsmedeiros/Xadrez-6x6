@@ -285,92 +285,55 @@ namespace MiniChess
             
             return -1;
         }
-        public static int evalSimples(char[,] atual){
+        public static int evalSimples(char[,] board){
             int p=0, b=0, t=0, q=0;
             char chP = Char.ToLower(Types.PAWN);
             char chB = Char.ToLower(Types.BISHOP);
             char chR = Char.ToLower(Types.ROOK);
             char chQ = Char.ToLower(Types.QUEEN);
+
             for(int i=0; i<6; i++){
                 for(int j=0; j<6; j++){
-                    if(atual[i,j].Equals(chP)){
+                    if(board[i,j].Equals(chP)){
                         p+=1;
                     }
-                    if(atual[i,j].Equals(Types.PAWN)){
+                    if(board[i,j].Equals(Types.PAWN)){
                         p-=1;
                     }
-                    if(atual[i,j].Equals(chB)){
+                    if(board[i,j].Equals(chB)){
                         b+=1;
                     }
-                    if(atual[i,j].Equals(Types.BISHOP)){
+                    if(board[i,j].Equals(Types.BISHOP)){
                         b-=1;
                     }
-                    if(atual[i,j].Equals(chR)){
+                    if(board[i,j].Equals(chR)){
                         t+=1;
                     }
-                    if(atual[i,j].Equals(Types.ROOK)){
+                    if(board[i,j].Equals(Types.ROOK)){
                         t-=1;
                     }
-                    if(atual[i,j].Equals(chQ)){
+                    if(board[i,j].Equals(chQ)){
                         q+=1;
                     }
-                    if(atual[i,j].Equals(Types.QUEEN)){
+                    if(board[i,j].Equals(Types.QUEEN)){
                         q-=1;
                     }
                 }
             }
+
             int eval = p + 3*b + 5*t + 9*q;
             return eval;
         }
-        public static int evalUtility(State state){
-            if(state.checkDraw()){
-                return 0;
-            }
 
-            int p=0, b=0, t=0, q=0;
-            char chP = Char.ToLower(Types.PAWN);
-            char chB = Char.ToLower(Types.BISHOP);
-            char chR = Char.ToLower(Types.ROOK);
-            char chQ = Char.ToLower(Types.QUEEN);
-            for(int i=0; i<6; i++){
-                for(int j=0; j<6; j++){
-                    if(state.board[i,j].Equals(chP)){
-                        p+=1;
-                    }
-                    if(state.board[i,j].Equals(Types.PAWN)){
-                        p-=1;
-                    }
-                    if(state.board[i,j].Equals(chB)){
-                        b+=1;
-                    }
-                    if(state.board[i,j].Equals(Types.BISHOP)){
-                        b-=1;
-                    }
-                    if(state.board[i,j].Equals(chR)){
-                        t+=1;
-                    }
-                    if(state.board[i,j].Equals(Types.ROOK)){
-                        t-=1;
-                    }
-                    if(state.board[i,j].Equals(chQ)){
-                        q+=1;
-                    }
-                    if(state.board[i,j].Equals(Types.QUEEN)){
-                        q-=1;
-                    }
-                }
-            }
-            int util = p + 3*b + 5*t + 9*q;
-            if(gameIsOver(state)){
-                if(getWinner(state)==1){
-                    util -= 100;
-                }
-                else
-                    util += 100;
-            }   
-            util = util/(state.playsCount);
-            return util;
+        public static int evalUtility(State state){
+            if(state.checkDraw()) return 0;
             
+            evalSimples(state.board);
+
+            if(gameIsOver(state))
+                util += getWinner(state) == 1 ? -100 : 100;
+
+            return util/state.playsCount as int;
         }
             
     }

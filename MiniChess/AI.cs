@@ -134,7 +134,7 @@ namespace AINS
                 case 1:
                     return utility(state);
                 case 2:
-                    return Program.evalSimples(state.board);
+                    return Program.evalUtility(state.board);
                 default:
                     return utility(state);
             }
