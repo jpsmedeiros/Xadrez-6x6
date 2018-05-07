@@ -34,7 +34,7 @@ namespace AINS
                 return null;
             }
 
-            int v = Int32.MinValue;
+            int v    = Int32.MinValue;
             int alfa = Int32.MinValue;
             int beta = Int32.MaxValue;
             
@@ -63,15 +63,8 @@ namespace AINS
             LinkedList<int[]>.Enumerator e = moves.GetEnumerator();
             for(i=0; i<moveIndex+1; i++){
                 e.MoveNext();
-                //Console.WriteLine($"{e.Current[0]} {e.Current[1]} {e.Current[2]} {e.Current[3]}");
             }
             return e.Current;
-            // i=0;
-            // foreach(var move in moves){
-            //     if(i==moveIndex)
-            //         return move;
-            //     i++;
-            // }
         }
 
         public int max_value(State state, int alfa, int beta){
@@ -105,7 +98,7 @@ namespace AINS
             return v;
         }
 
-        public int min_value(State state,int alfa, int beta){
+        public int min_value(State state, int alfa, int beta){
             if(cut(state)){
                 return eval(state);
             }
@@ -156,8 +149,6 @@ namespace AINS
             else{
                 return Int32.MaxValue;
             }
-
-            //return Program.evalSimples(state.board);
         }
 
         public bool cut(State state){

@@ -287,7 +287,6 @@ namespace MiniChess
         }
         public static int evalSimples(char[,] atual){
             int p=0, b=0, t=0, q=0;
-            //int k=0;
             char chP = Char.ToLower(Types.PAWN);
             char chB = Char.ToLower(Types.BISHOP);
             char chR = Char.ToLower(Types.ROOK);
@@ -327,8 +326,8 @@ namespace MiniChess
             if(state.checkDraw()){
                 return 0;
             }
+
             int p=0, b=0, t=0, q=0;
-            //int k=0;
             char chP = Char.ToLower(Types.PAWN);
             char chB = Char.ToLower(Types.BISHOP);
             char chR = Char.ToLower(Types.ROOK);
