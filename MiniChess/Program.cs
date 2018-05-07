@@ -11,7 +11,7 @@ namespace MiniChess
         private static bool game;
         public static int gameMode = 1; // default = 1: Player vs Player
         public static State currentState;
-        private static bool messageHandlerActive = true;
+        public static bool messageHandlerActive = true;
         public static Types types = new Types();
 
         public static AI ia1 = new AI(2,2);
@@ -27,9 +27,7 @@ namespace MiniChess
             // game loop
             while(game){
                 printBoard();                
-                //RuleMachine.possible_moves(currentState);
                 movementInterface();
-                //printBoard();
 
                 Console.WriteLine("Eval: " + evalSimples(currentState.board));
 
@@ -45,7 +43,6 @@ namespace MiniChess
             char[,] new_board = initializeBoard();
             int initialPlayer = 1;
             currentState = new State(new_board, initialPlayer, null, 0);
-            //Console.Clear();
             game = true;
         }
 
@@ -106,6 +103,7 @@ namespace MiniChess
                 input = Console.ReadLine();
             }while(handleModeInput(input));
         }
+
         public static bool handleModeInput(string input){
             try{
                 int option = Int32.Parse(input);
@@ -138,7 +136,7 @@ namespace MiniChess
                     case 1:
                         return false;
                     case 2:
-                        modeInterface();//modo de jogo
+                        modeInterface();
                         return true;
                     case 3:
                         Console.WriteLine("Bem vindo ao Xadrez 6x6\nPara movimentar sua peça digite seu movimento no formato: x1 y1 x2 y2\n"+
@@ -160,7 +158,6 @@ namespace MiniChess
             
         }
         public static bool handleMovementInput(String input){
-            //TODO Verificar se formato da string está incorreto
             string[] answer;
             answer = input.Split(" ");
             if(answer.Length < 4){
@@ -178,7 +175,7 @@ namespace MiniChess
             if(!RuleMachine.validateMove(coordinates, currentState.board, currentState.currentPlayer)){
                 return true;
             }
-            //Console.WriteLine(RuleMachine.isCheck(currentState.board, currentState.currentPlayer, coordinates));
+
             movePiece(coordinates);
             return false;
         }
@@ -194,7 +191,7 @@ namespace MiniChess
             currentState.playsCount++;
         }
 
-        public static char[,] fillBoardPieces(char[,] board){//prenche as peças nas suas posições iniciais do jogo
+        public static char[,] fillBoardPieces(char[,] board){
             int lin, col;
             int tamanho = board.GetLength(0);
             lin = 1;
@@ -206,8 +203,8 @@ namespace MiniChess
                 board[lin, col] = Types.getPlayer2Piece(Types.PAWN);
             }
             //Jogador 1
-            board[0, 0] = board[0, 5] = Types.ROOK; // TORRE
-            board[0, 1] = board[0, 4] = Types.BISHOP; // BISPO
+            board[0, 0] = board[0, 5] = Types.ROOK;
+            board[0, 1] = board[0, 4] = Types.BISHOP;
             board[0, 2] = Types.QUEEN;
             board[0, 3] = Types.KING;
             //Jogador 2
@@ -243,7 +240,7 @@ namespace MiniChess
             return currentState.currentPlayer;
         }
         public static void messageHandler(String msg){
-            if(messageHandlerActive){
+            if(false){
                 Console.WriteLine(msg);
             }
         }
@@ -286,6 +283,7 @@ namespace MiniChess
             return -1;
         }
         public static int evalSimples(char[,] atual){
+            return 100;
             int p=0, b=0, t=0, q=0;
             char chP = Char.ToLower(Types.PAWN);
             char chB = Char.ToLower(Types.BISHOP);
@@ -323,54 +321,14 @@ namespace MiniChess
             return eval;
         }
         public static int evalUtility(State state){
-            if(state.checkDraw()){
-                return 0;
-            }
-
-            int p=0, b=0, t=0, q=0;
-            char chP = Char.ToLower(Types.PAWN);
-            char chB = Char.ToLower(Types.BISHOP);
-            char chR = Char.ToLower(Types.ROOK);
-            char chQ = Char.ToLower(Types.QUEEN);
-            for(int i=0; i<6; i++){
-                for(int j=0; j<6; j++){
-                    if(state.board[i,j].Equals(chP)){
-                        p+=1;
-                    }
-                    if(state.board[i,j].Equals(Types.PAWN)){
-                        p-=1;
-                    }
-                    if(state.board[i,j].Equals(chB)){
-                        b+=1;
-                    }
-                    if(state.board[i,j].Equals(Types.BISHOP)){
-                        b-=1;
-                    }
-                    if(state.board[i,j].Equals(chR)){
-                        t+=1;
-                    }
-                    if(state.board[i,j].Equals(Types.ROOK)){
-                        t-=1;
-                    }
-                    if(state.board[i,j].Equals(chQ)){
-                        q+=1;
-                    }
-                    if(state.board[i,j].Equals(Types.QUEEN)){
-                        q-=1;
-                    }
-                }
-            }
-            int util = p + 3*b + 5*t + 9*q;
-            if(gameIsOver(state)){
-                if(getWinner(state)==1){
-                    util -= 100;
-                }
-                else
-                    util += 100;
-            }   
-            util = util/(state.playsCount);
-            return util;
+            if(state.checkDraw()) return 0;
             
+            int util = evalSimples(state.board);
+
+            if(gameIsOver(state))
+                util += getWinner(state) == 1 ? -100 : 100;
+
+            return (int) util/state.playsCount;
         }
             
     }

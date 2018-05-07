@@ -141,7 +141,7 @@ namespace AINS
 
         }
 
-        //Utility avalia apenas estados terminais
+        // Utility avalia apenas estados terminais
         public int utility(State state){
             if(state.currentPlayer == playerId){
                 return Int32.MinValue;
@@ -163,13 +163,7 @@ namespace AINS
         }
 
         public bool cutoff_test(State state){
-            if((state.playsCount - Program.currentState.playsCount) <= 8){
-                //Console.WriteLine($"AAAAAA {state.playsCount}");
-                return false;
-            }
-            else{
-                return true;
-            }
+            return state.playsCount - Program.currentState.playsCount > 3;   
         }
 
     }
