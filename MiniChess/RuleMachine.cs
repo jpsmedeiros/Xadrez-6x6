@@ -29,10 +29,10 @@ namespace RuleMachineNS
                 return false;
             }
             char destination = board[coordinates[2], coordinates[3]];
-            if(Types.isPlayerX(destination, currentPlayer)){
+            /**if(Types.isPlayerX(destination, currentPlayer)){
                 Program.messageHandler("Peça pertence ao jogador atual, não pode capturar");
                 return false;
-            }
+            }**/
             if((coordinates[0] == coordinates[2]) && coordinates[1] == coordinates[3]){
                 Program.messageHandler("Você deve movimentar a peça para uma posição diferente da atual");
                 return false;
@@ -81,9 +81,9 @@ namespace RuleMachineNS
                     return false;
                 }else if(checkResult == 2){
                     int otherPlayer = currentPlayer == 1 ? 2 : 1;
-                    Console.WriteLine("Rei do jogador "+otherPlayer+" está em xeque");
+//                    Console.WriteLine("Rei do jogador "+otherPlayer+" está em xeque");
                 }
-                Console.WriteLine("IS CHECK: "+checkResult);
+//                Console.WriteLine("IS CHECK: "+checkResult);
             }
             return result;
         }
@@ -307,7 +307,6 @@ namespace RuleMachineNS
                                 if(validateMove(currentMove, state.board, state.currentPlayer)){//movimento é válido
                                     moves.AddLast(currentMove);//coloca na lista de movimentos válidos
                                     contador2++;
-                                    //TESTAR
                                 }
                                 currentMove = fillMove(currentMove, -1, -1, -1, -1);//reseta
                             }
@@ -362,6 +361,7 @@ namespace RuleMachineNS
             }
             return 0;
         }
+        
         public static int[] findKingX(char[,] board, int currentPlayer){
             int[] position = new int[2];
             int lin, col, size;
