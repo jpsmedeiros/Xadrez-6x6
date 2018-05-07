@@ -119,7 +119,6 @@ namespace RuleMachineNS
             return false;//TODO*/
         }
         public static bool isValidHorizontalVertical(char piece, int[] coordinates, char[,] board, string pieceName){
-            int lin,col;
             int linInicial, colInicial, linFinal, colFinal;
             int moveOne;
             linInicial = coordinates[0];
@@ -132,6 +131,7 @@ namespace RuleMachineNS
                 moveOne = -1;
             }
             if(linInicial != linFinal){
+                int lin;
                 for(lin = linInicial+moveOne; lin != linFinal+moveOne; lin=lin+moveOne){
                     char currentPiece = board[lin, colInicial];
                     if(!Types.isEmpty(currentPiece) && (lin != linFinal)){
@@ -142,6 +142,7 @@ namespace RuleMachineNS
                 return true;
             }
             if(colInicial != colFinal){
+                int col;
                 for(col = colInicial+moveOne; col != colFinal+moveOne; col=col+moveOne){
                     char currentPiece = board[linInicial, col];
                     if(!Types.isEmpty(currentPiece) && (col != colFinal)){
@@ -173,46 +174,35 @@ namespace RuleMachineNS
             return isValidHorizontalVertical(piece, coordinates, board, name);
         }
         public static bool isValidDiagonal(char piece, int[] coordinates, char[,] board, string pieceName){
-            int lin,col;
             int linInicial, colInicial, linFinal, colFinal;
-            int moveX, moveY;
             linInicial = coordinates[0];
             colInicial = coordinates[1];
             linFinal = coordinates[2];
             colFinal = coordinates[3];
+            int distY = Math.Abs(linFinal - linInicial);
+            int distX = Math.Abs(colFinal - colInicial);
 
-            if(linInicial < linFinal){
-                moveX = 1;
-                if(colInicial < colFinal) moveY = 1;
-                else moveY = -1;
-            } else{
-                moveX = -1;
-                if(colInicial < colFinal) moveY = 1;
-                else moveY = -1;
+            if(distY - distX != 0){
+                Program.messageHandler("Movimento inválido, é necessário que seja na diagonal.");
+                return false; //checa se não está na diagonal
             }
+            Program.messageHandler("Distância igual.");
+            int moveX = (colFinal - colInicial);
+            moveX = moveX/distX;
+            int moveY = (linFinal - linInicial);
+            moveY = moveY/distY;
 
-            int auxX = 0, auxY = 0;
-            lin = linInicial;
-            col = colInicial;
-            while(true){
-                lin += moveX;
-                if(lin != linFinal) auxX++;
-                col += moveY;
-                if(col != colFinal) auxY++;
-                if((lin == linFinal) && (col == colFinal)) return true;
-                if((lin == linFinal) || (col == colFinal)){
-                    Program.messageHandler("Movimento inválido para "+pieceName+". São permitidos somente movimentos nas diagonais.");
-                    return false;
-                }
+            int lin = linInicial, col = colInicial, i;
+            for(i = 0; i < distX; i++){
+                lin += moveY;
+                col += moveX;
                 char currentPiece = board[lin, col];
                 if(!Types.isEmpty(currentPiece) && ((col != colFinal) || (lin != linFinal))){
                     Program.messageHandler("Movimento inválido para "+pieceName+". Existe outra peça no caminho.");
                     return false;
                 }
             }
-
-            //Program.messageHandler("ERRO: Movimento inválido para "+pieceName+". MOVIMENTO NÃO TRATADO.");
-            //return false;//TODO
+            return true;
         }
         public static bool isValidForBishop(char piece, int[] coordinates, char[,] board, int currentPlayer){
             /*
@@ -225,12 +215,10 @@ namespace RuleMachineNS
             colInicial = coordinates[1];
             linFinal = coordinates[2];
             colFinal = coordinates[3];
-
             if((linInicial == linFinal) || (colInicial == colFinal)){
                 Program.messageHandler("Movimento inválido para o Bispo. São permitidos somente movimentos nas diagonais.");
                 return false;
             }
-
             string name = "o Bispo";
             return isValidDiagonal(piece, coordinates, board, name);
         }
@@ -358,7 +346,6 @@ namespace RuleMachineNS
             }
             return true;
         }
-
         /*ver se é cheque mate, eu pego todos os movimentos possíveis do jogador que está com o rei sob xeque e vejo se todos deles o inCheck(...) 
         retorna verdadeiro, se para todos os movimentos possíveis do jogador ele ainda estiver em xeque, é xeque mate */
         public static int[] findKingX(char[,] board, int currentPlayer){
