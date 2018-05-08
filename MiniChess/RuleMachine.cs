@@ -41,6 +41,7 @@ namespace RuleMachineNS
         public static bool isValidForPiece(char piece, int[] coordinates, char[,] board, int currentPlayer, bool isCheckCall = false){
             piece = Types.getPlayer1Piece(piece);
             bool result;
+
             switch(piece){
                 case Types.KING:
                     result = isValidForKing(piece, coordinates, board, currentPlayer);
@@ -255,7 +256,7 @@ namespace RuleMachineNS
             char piece = board[coordinates[2], coordinates[3]];
             return !Types.isEmpty(piece);
         }
-        public static LinkedList<int[]> possible_moves(State state, bool isCheckCall = false){
+        public static LinkedList<int[]> possible_moves(State state, char checkCall = 'X'){
             LinkedList<int[]> moves = new LinkedList<int[]>();
             char currentPiece;
             int[] currentMove = new int[4];
@@ -277,7 +278,15 @@ namespace RuleMachineNS
                         for(lin2 = 0; lin2 < size ; lin2++){//verifica para todas as casas do tabuleiro se um movimento para aquela casa é válido
                             for(col2 = 0; col2 < size ; col2++){
                                 currentMove = fillMove(currentMove, lin1, col1, lin2, col2);
-                                if(validateMove(currentMove, state.board, state.currentPlayer, isCheckCall)){//movimento é válido
+                                if(checkCall != 'X'){
+                                    if (state.board[currentMove[2], currentMove[3]] == checkCall){
+                                        if (validateMove(currentMove, state.board, state.currentPlayer, true)){
+                                            LinkedList<int[]> moves_check_only = new LinkedList<int[]>();
+                                            moves_check_only.AddLast(currentMove);
+                                            return moves_check_only;
+                                        }
+                                    }
+                                }else if(validateMove(currentMove, state.board, state.currentPlayer)){//movimento é válido
                                     moves.AddLast(currentMove);//coloca na lista de movimentos válidos
                                 }
                                 currentMove = fillMove(currentMove, -1, -1, -1, -1);//reseta
@@ -317,16 +326,16 @@ namespace RuleMachineNS
             int[] kingPositionCurrentPlayer = findKingX(state.board, currentPlayer);
             int[] kingPositionOtherPlayer   = findKingX(state.board, otherPlayer);
 
-
-            LinkedList<int[]> possibleMoves = possible_moves(state, true);//movimentos possiveis do inimigo
+            LinkedList<int[]> possibleMoves = possible_moves(state, Types.getPlayerXPiece(Types.KING, state.getOpponent()));//movimentos possiveis do inimigo
             
             foreach(int[] possibleMove in possibleMoves){//possiveis movimentos do INIMIGO de currentPlayer
                 if(possibleMove[2] == kingPositionCurrentPlayer[0] && possibleMove[3] == kingPositionCurrentPlayer[1]){
-                    return 1;//meu rei está em xeque se fizer essa jogada
+                    Program.messageHandler("Seu rei em cheque se fizer essa jogada!");
+                    return 1;
                 }
             }
             state = new State(state.board, currentPlayer, null, 0);
-            possibleMoves = possible_moves(state, true);//meus movimentos possíveis
+            possibleMoves = possible_moves(state, Types.getPlayerXPiece(Types.KING, state.getOpponent()));//meus movimentos possíveis
             foreach(int[] possibleMove in possibleMoves){
                 if(possibleMove[2] == kingPositionOtherPlayer[0] && possibleMove[3] == kingPositionOtherPlayer[1]){
                     return 2;
