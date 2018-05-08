@@ -11,6 +11,12 @@ namespace TypesNS
         public const char PAWN = 'P';
         public const char EMPTY = '0';
 
+        public const char KING2 = 'k';
+        public const char QUEEN2 = 'q';
+        public const char ROOK2 = 't';
+        public const char BISHOP2 = 'b';
+        public const char PAWN2 = 'p';
+
         public static bool isPlayer1(char piece){
             return Char.IsUpper(piece);
         }

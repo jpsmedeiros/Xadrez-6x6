@@ -35,7 +35,7 @@ namespace MiniChess
                 movementInterface();
                 //printBoard();
 
-                Console.WriteLine("Eval: " + evalSimples(currentState.board));
+                Console.WriteLine("Eval: " + AI.eval1(currentState));
 
                 if (currentState.gameIsOver()){
                     printBoard();
@@ -290,51 +290,6 @@ namespace MiniChess
             }
             
             return -1;
-        }
-        public static int evalSimples(char[,] atual){
-            int p=0, b=0, t=0, q=0;
-            //int k=0;
-            //char[,] board = new char[6, 6];
-            //board = State.board;
-            //Types comp = new Types();
-            char chP = Char.ToLower(Types.PAWN);
-            char chB = Char.ToLower(Types.BISHOP);
-            char chR = Char.ToLower(Types.ROOK);
-            char chQ = Char.ToLower(Types.QUEEN);
-            for(int i=0; i<6; i++){
-                for(int j=0; j<6; j++){
-                    if(atual[i,j].Equals(chP)){
-                        p+=1;
-                    }else if(atual[i,j].Equals(Types.PAWN)){
-                        p-=1;
-                    }else if(atual[i,j].Equals(chB)){
-                        b+=1;
-                    }else if(atual[i,j].Equals(Types.BISHOP)){
-                        b-=1;
-                    }else if(atual[i,j].Equals(chR)){
-                        t+=1;
-                    }else if(atual[i,j].Equals(Types.ROOK)){
-                        t-=1;
-                    }else if(atual[i,j].Equals(chQ)){
-                        q+=1;
-                    }else if(atual[i,j].Equals(Types.QUEEN)){
-                        q-=1;
-                    }
-                }
-            }
-            int eval = p + 3*b + 5*t + 9*q;
-            return eval;
-        }
-        
-        public static int evalUtility(State state){
-            if(state.checkDraw()) return 0;
-            
-            int util = evalSimples(state.board);
-
-            if(state.gameIsOver())
-                util += getWinner(state) < 2 ? -100 : 100;
-
-            return (int) util/state.playsCount;
         }
     }
 }
