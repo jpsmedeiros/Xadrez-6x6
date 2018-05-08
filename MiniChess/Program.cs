@@ -325,7 +325,7 @@ namespace MiniChess
             int eval = p + 3*b + 5*t + 9*q;
             return eval;
         }
-<<<<<<< HEAD
+        
         public static int evalUtility(State state){
             if(state.checkDraw()) return 0;
             
@@ -336,8 +336,5 @@ namespace MiniChess
 
             return (int) util/state.playsCount;
         }
-            
-=======
->>>>>>> ce793765bdacef15130cf5b550b56b65bcbd1010
     }
 }
