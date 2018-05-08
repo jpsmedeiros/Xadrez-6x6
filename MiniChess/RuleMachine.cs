@@ -14,7 +14,6 @@ namespace RuleMachineNS
                 int atual = coordinates[i]+1;
                 if(atual > 6 || atual < 1){
                     Program.messageHandler("Jogada fora do tabuleiro");
-
                     return false;
                 }
             }
@@ -62,12 +61,14 @@ namespace RuleMachineNS
                     return false;
             }
             if(result){
+                return result;
+                
                 StackTrace stackTrace = new StackTrace();
-
                 if(stackTrace.GetFrame(3).GetMethod().Name == "isCheck"
                    && stackTrace.GetFrame(2).GetMethod().Name == "possible_moves"){
                       return result;  
                 }
+
                 int checkResult = isCheck(board, currentPlayer, coordinates);
                 if(checkResult == 1){
                     Program.messageHandler("Movimento inválido, peça em xeque");
@@ -306,7 +307,7 @@ namespace RuleMachineNS
             // 0 = não leva a xeque
             // 1 = leva a xeque de rei de currentPlayer
             // 2 = leva a xeque de rei inimigo
-            //O QUE EU QUERO SABER
+            // O QUE EU QUERO SABER
             // SE EU FIZER ESTE MOVIMENTO MEU REI ESTÁ EM XEQUE?
             // SE EU FIZER ESTE MOVIMENTO O REI DO OUTRO ESTÁ EM XEQUE?
             // ==> Verificar se movimento do jogador currentPlayer leva a um xeque do rei dele OK
@@ -319,12 +320,13 @@ namespace RuleMachineNS
                 state.board[move[0], move[1]] = Types.EMPTY; // PROBLEMA AQUI colocar o 0 está fazendo mostrar mensagem de xeque indevidamente
             }//se move == null significa que quero saber se o estado atual está em xeque
             int[] kingPositionCurrentPlayer = findKingX(state.board, currentPlayer);
-            int[] kingPositionOtherPlayer = findKingX(state.board, otherPlayer);
+            int[] kingPositionOtherPlayer   = findKingX(state.board, otherPlayer);
+
 
             LinkedList<int[]> possibleMoves = possible_moves(state);//movimentos possiveis do inimigo
+            
             foreach(int[] possibleMove in possibleMoves){//possiveis movimentos do INIMIGO de currentPlayer
                 if(possibleMove[2] == kingPositionCurrentPlayer[0] && possibleMove[3] == kingPositionCurrentPlayer[1]){
-                    //Program.messageHandler("Rei do jogador "+currentPlayer+" está em xeque");
                     return 1;//meu rei está em xeque se fizer essa jogada
                 }
             }
@@ -353,11 +355,11 @@ namespace RuleMachineNS
             int lin, col, size;
             size = board.GetLength(0);
             char currentPiece;
-            for(lin = 0 ; lin < size ; lin++){//procura pela posição do rei
+            for(lin = 0 ; lin < size ; lin++){ //procura pela posição do rei
                 for(col = 0; col < size; col++){
                     currentPiece = board[lin, col];
-                    if(Types.getPlayer1Piece(currentPiece) == Types.KING){//é rei
-                        if(Types.isPlayerX(currentPiece, currentPlayer)){//é do jogador atual
+                    if(Types.getPlayer1Piece(currentPiece) == Types.KING){ //é rei
+                        if(Types.isPlayerX(currentPiece, currentPlayer)){ //é do jogador atual
                             position[0] = lin;
                             position[1] = col;
                             return position;

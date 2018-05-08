@@ -29,17 +29,17 @@ namespace AINS
         }
 
         public int[] alpha_beta_search(State state){
-            if(Program.gameIsOver(state)){
-                Console.WriteLine($"A IA jogador:{this.playerId} está tentando jogar depois do jogo ter terminado");
-                return null;
-            }
+            //if(Program.gameIsOver(state)){
+            //    Console.WriteLine($"A IA jogador:{this.playerId} está tentando jogar depois do jogo ter terminado");
+            //    return null;
+            //}
 
             int v    = Int32.MinValue;
             int alfa = Int32.MinValue;
             int beta = Int32.MaxValue;
             
             LinkedList<int[]> moves = RuleMachine.possible_moves(state);
-            int i=0, temp, moveIndex=0;           
+            int i=0, temp, moveIndex=0;
             foreach(var move in moves){
                 //MAX(v,min_value(result(s,a),alfa,beta))
                 temp = min_value(State.result(state,move),alfa,beta);
@@ -68,11 +68,7 @@ namespace AINS
         }
 
         public int max_value(State state, int alfa, int beta){
-            if(cut(state)){
-                return eval(state);
-            }
-            
-            if(Program.gameIsOver(state)){
+            if(cut(state) || state.gameIsOver()){
                 return eval(state);
             }
 
@@ -99,14 +95,10 @@ namespace AINS
         }
 
         public int min_value(State state, int alfa, int beta){
-            if(cut(state)){
+            if(cut(state) || state.gameIsOver()){
                 return eval(state);
             }
-            
-            if(Program.gameIsOver(state)){
-                return eval(state);
-            }
-
+        
             int v = Int32.MaxValue;
             int temp;
             LinkedList<int[]> moves = RuleMachine.possible_moves(state);
@@ -138,7 +130,6 @@ namespace AINS
                 default:
                     return utility(state);
             }
-
         }
 
         // Utility avalia apenas estados terminais
@@ -163,7 +154,7 @@ namespace AINS
         }
 
         public bool cutoff_test(State state){
-            return state.playsCount - Program.currentState.playsCount > 3;   
+            return state.playsCount - Program.currentState.playsCount > 5;
         }
 
     }

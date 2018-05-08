@@ -11,6 +11,7 @@ namespace StateNS
         public int[] lastMove;
         public int playsCount;
         public int playsWithoutCapture;
+        public bool gameOver = false;
 
         public State(char[,] board, int currentPlayer, int[] lastMove, int playsCount, int playsWithoutCapture = 0){
             this.board = (char[,])board.Clone();
@@ -34,6 +35,22 @@ namespace StateNS
             }
         }
 
+        private void registerGameIsOver(){
+            int number_of_kings = 0;
+            foreach (char piece in this.board)
+                if (Types.getPlayer1Piece(piece) == Types.KING) number_of_kings++;
+        
+            this.gameOver = number_of_kings < 2 || this.checkDraw();
+        }
+
+        public bool gameIsOver(){
+            return this.gameOver;
+        }
+
+        public bool checkDraw(){
+            return this.playsWithoutCapture >= 15;
+        }
+
         public static State result(State oldState, int[] action){
             State newState = new State(oldState.board, oldState.currentPlayer, oldState.lastMove, oldState.playsCount, oldState.playsWithoutCapture);
             
@@ -50,11 +67,10 @@ namespace StateNS
             newState.lastMove = action;
             newState.playsCount++;
             
+            newState.registerGameIsOver();
+
             return newState;
         }
-
-        public bool checkDraw(){
-            return this.playsWithoutCapture >= 5;
-        }
+        
     }
 }
