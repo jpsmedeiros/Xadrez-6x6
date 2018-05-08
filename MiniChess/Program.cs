@@ -241,7 +241,7 @@ namespace MiniChess
             printBoard(currentState);
         }
 
-        public int getCurrentPlayer(){
+        public static int getCurrentPlayer(){
             return currentState.currentPlayer;
         }
         public static void messageHandler(String msg){
