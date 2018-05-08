@@ -126,13 +126,6 @@ namespace RuleMachineNS
             colInicial = coordinates[1];
             linFinal = coordinates[2];
             colFinal = coordinates[3];
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-
->>>>>>> 639a3b6803cfccd088c0064f1435f9a4ceda5925
->>>>>>> 5930508aae8781b881131ff72eb609b3b2fe5a5c
             if((linInicial < linFinal) || (colInicial < colFinal)){
                 moveOne = 1;
             }else{
@@ -355,10 +348,6 @@ namespace RuleMachineNS
             }
             return true;
         }
-<<<<<<< HEAD
-=======
-
->>>>>>> 5930508aae8781b881131ff72eb609b3b2fe5a5c
         /*ver se é cheque mate, eu pego todos os movimentos possíveis do jogador que está com o rei sob xeque e vejo se todos deles o inCheck(...) 
         retorna verdadeiro, se para todos os movimentos possíveis do jogador ele ainda estiver em xeque, é xeque mate */
         public static int[] findKingX(char[,] board, int currentPlayer){

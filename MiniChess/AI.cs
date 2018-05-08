@@ -69,11 +69,7 @@ namespace AINS
         }
 
         public int max_value(State state, int alfa, int beta){
-            if(cutoff_test(state)){
-                return eval(state);
-            }
-            
-            if(Program.gameIsOver(state)){
+            if(cut(state) || state.gameIsOver()){
                 return eval(state);
             }
 
@@ -100,7 +96,7 @@ namespace AINS
         }
 
         public int min_value(State state, int alfa, int beta){
-            if(cutoff_test(state)){
+            if(cut(state) || state.gameIsOver()){
                 return eval(state);
             }
         
@@ -147,20 +143,17 @@ namespace AINS
         //    }
         //}
 
-        //public bool cut(State state){
-        //    switch(this.type){
-        //        case 1:
-        //            return false;
-        //        case 2:
-        //            return cutoff_test(state);
-        //        default:
-        //            return false;
-        //    }
-        //}
-
-        public bool cutoff_test(State state){
-            return state.playsCount - Program.currentState.playsCount > 3;   
+        public bool cut(State state){
+           switch(this.type){
+               case 1:
+                   return false;
+               case 2:
+                   return cutoff_test(state);
+               default:
+                   return false;
+           }
         }
+
         //função de avaliação sobre a segurança do rei
         public static int evalKingSafety(State state){
             for(int i=-1; i<=1; i++){
