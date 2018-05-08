@@ -214,8 +214,8 @@ namespace MiniChess
             //Jogador 2
             board[5, 0] = board[5, 5] = Types.getPlayer2Piece(Types.ROOK);
             board[5, 1] = board[5, 4] = Types.getPlayer2Piece(Types.BISHOP);
-            board[5, 2] = Types.getPlayer2Piece(Types.KING);
-            board[5, 3] = Types.getPlayer2Piece(Types.QUEEN);
+            board[5, 2] = Types.getPlayer2Piece(Types.QUEEN);
+            board[5, 3] = Types.getPlayer2Piece(Types.KING);
 
             return board;
         }
