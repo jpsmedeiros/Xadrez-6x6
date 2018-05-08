@@ -14,7 +14,6 @@ namespace RuleMachineNS
                 int atual = coordinates[i]+1;
                 if(atual > 6 || atual < 1){
                     Program.messageHandler("Jogada fora do tabuleiro");
-
                     return false;
                 }
             }
@@ -63,27 +62,21 @@ namespace RuleMachineNS
                     return false;
             }
             if(result){
+                return result;
+                
                 StackTrace stackTrace = new StackTrace();
-                // Get calling method name
-                /*
-                Console.WriteLine("INICIO");
-                Console.WriteLine(stackTrace.GetFrame(3).GetMethod().Name);
-                Console.WriteLine(stackTrace.GetFrame(2).GetMethod().Name);
-                Console.WriteLine(stackTrace.GetFrame(1).GetMethod().Name);
-                Console.WriteLine("FIM");*/
                 if(stackTrace.GetFrame(3).GetMethod().Name == "isCheck"
                    && stackTrace.GetFrame(2).GetMethod().Name == "possible_moves"){
                       return result;  
                 }
+
                 int checkResult = isCheck(board, currentPlayer, coordinates);
                 if(checkResult == 1){
                     Program.messageHandler("Movimento inválido, peça em xeque");
                     return false;
                 }else if(checkResult == 2){
                     int otherPlayer = currentPlayer == 1 ? 2 : 1;
-//                    Console.WriteLine("Rei do jogador "+otherPlayer+" está em xeque");
                 }
-//                Console.WriteLine("IS CHECK: "+checkResult);
             }
             return result;
         }
@@ -280,7 +273,7 @@ namespace RuleMachineNS
             char piece = board[coordinates[2], coordinates[3]];
             return !Types.isEmpty(piece);
         }
-        public static LinkedList<int[]> possible_moves(State state){
+        public static LinkedList<int[]> possible_moves(State state, char checkKingAttackPiece = 'X'){
             LinkedList<int[]> moves = new LinkedList<int[]>();
             char currentPiece;
             int[] currentMove = new int[4];
@@ -301,10 +294,19 @@ namespace RuleMachineNS
                     currentPiece = state.board[lin1, col1];
                     if(Types.isPlayerX(currentPiece, state.currentPlayer)){//é peça do jogador
                         for(lin2 = 0; lin2 < size ; lin2++){//verifica para todas as casas do tabuleiro se um movimento para aquela casa é válido
-                            for(col2 = 0; col2 < size ; col2++){
+                            for(col2 = 0; col2 < size; col2++){
+                                bool isCheckAttack = false;
                                 contador++;
                                 currentMove = fillMove(currentMove, lin1, col1, lin2, col2);
-                                if(validateMove(currentMove, state.board, state.currentPlayer)){//movimento é válido
+
+                                if (checkKingAttackPiece != 'X'){
+                                    isCheckAttack = state.board[currentMove[2], currentMove[3]] == checkKingAttackPiece;
+                                    if (isCheckAttack && validateMove(currentMove, state.board, state.currentPlayer)){
+                                        LinkedList<int[]> check_only_moves = new LinkedList<int[]>();
+                                        check_only_moves.AddLast(currentMove);
+                                        return check_only_moves;
+                                    }
+                                }else if(validateMove(currentMove, state.board, state.currentPlayer)){//movimento é válido
                                     moves.AddLast(currentMove);//coloca na lista de movimentos válidos
                                     contador2++;
                                 }
@@ -330,7 +332,7 @@ namespace RuleMachineNS
             // 0 = não leva a xeque
             // 1 = leva a xeque de rei de currentPlayer
             // 2 = leva a xeque de rei inimigo
-            //O QUE EU QUERO SABER
+            // O QUE EU QUERO SABER
             // SE EU FIZER ESTE MOVIMENTO MEU REI ESTÁ EM XEQUE?
             // SE EU FIZER ESTE MOVIMENTO O REI DO OUTRO ESTÁ EM XEQUE?
             // ==> Verificar se movimento do jogador currentPlayer leva a um xeque do rei dele OK
@@ -343,12 +345,13 @@ namespace RuleMachineNS
                 state.board[move[0], move[1]] = Types.EMPTY;
             }//se move == null significa que quero saber se o estado atual está em xeque
             int[] kingPositionCurrentPlayer = findKingX(state.board, currentPlayer);
-            int[] kingPositionOtherPlayer = findKingX(state.board, otherPlayer);
+            int[] kingPositionOtherPlayer   = findKingX(state.board, otherPlayer);
+
 
             LinkedList<int[]> possibleMoves = possible_moves(state);//movimentos possiveis do inimigo
+            
             foreach(int[] possibleMove in possibleMoves){//possiveis movimentos do INIMIGO de currentPlayer
                 if(possibleMove[2] == kingPositionCurrentPlayer[0] && possibleMove[3] == kingPositionCurrentPlayer[1]){
-                    //Program.messageHandler("Rei do jogador "+currentPlayer+" está em xeque");
                     return 1;//meu rei está em xeque se fizer essa jogada
                 }
             }
@@ -367,11 +370,11 @@ namespace RuleMachineNS
             int lin, col, size;
             size = board.GetLength(0);
             char currentPiece;
-            for(lin = 0 ; lin < size ; lin++){//procura pela posição do rei
+            for(lin = 0 ; lin < size ; lin++){ //procura pela posição do rei
                 for(col = 0; col < size; col++){
                     currentPiece = board[lin, col];
-                    if(Types.getPlayer1Piece(currentPiece) == Types.KING){//é rei
-                        if(Types.isPlayerX(currentPiece, currentPlayer)){//é do jogador atual
+                    if(Types.getPlayer1Piece(currentPiece) == Types.KING){ //é rei
+                        if(Types.isPlayerX(currentPiece, currentPlayer)){ //é do jogador atual
                             position[0] = lin;
                             position[1] = col;
                             return position;

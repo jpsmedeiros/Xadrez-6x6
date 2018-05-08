@@ -31,7 +31,7 @@ namespace MiniChess
 
                 Console.WriteLine("Eval: " + evalSimples(currentState.board));
 
-                if (gameIsOver(currentState)){
+                if (currentState.gameIsOver()){
                     printBoard();
                     Console.WriteLine("GAME OVER, player" + getWinner(currentState) + " ganhou a partida!");
                     game = false;
@@ -181,14 +181,12 @@ namespace MiniChess
         }
 
         public static void movePiece(int[] coordinates){
-            char piece = currentState.board[coordinates[0], coordinates[1]];
+            
             if(RuleMachine.isAttackMove(coordinates, currentState.board)){
                 capture(coordinates, currentState.board);
             }
-            currentState.board[coordinates[0], coordinates[1]] = Types.EMPTY;
-            currentState.board[coordinates[2], coordinates[3]] = piece;
-            changeCurrentPlayer();
-            currentState.playsCount++;
+
+            currentState = State.result(currentState, coordinates);
         }
 
         public static char[,] fillBoardPieces(char[,] board){
@@ -262,17 +260,9 @@ namespace MiniChess
             return Char.ToLower(piece);
         }
 
-        public static bool gameIsOver(State state){
-            int number_of_kings = 0;
-            foreach (char piece in state.board)
-                if (Types.getPlayer1Piece(piece) == Types.KING) number_of_kings++;
-        
-            return number_of_kings < 2 || state.checkDraw();
-        }
-
         // retorna -1 se o jogo não tiver ganhador ainda
         public static int getWinner(State state){
-            if (gameIsOver(state) && !state.checkDraw()){
+            if (state.gameIsOver() && !state.checkDraw()){
                 foreach (char piece in state.board){
                     bool is_king = Types.getPlayer1Piece(piece) == Types.KING;
                     int player = Types.getPiecePlayer(piece);
@@ -283,7 +273,6 @@ namespace MiniChess
             return -1;
         }
         public static int evalSimples(char[,] atual){
-            return 100;
             int p=0, b=0, t=0, q=0;
             char chP = Char.ToLower(Types.PAWN);
             char chB = Char.ToLower(Types.BISHOP);
@@ -293,26 +282,19 @@ namespace MiniChess
                 for(int j=0; j<6; j++){
                     if(atual[i,j].Equals(chP)){
                         p+=1;
-                    }
-                    if(atual[i,j].Equals(Types.PAWN)){
+                    }else if(atual[i,j].Equals(Types.PAWN)){
                         p-=1;
-                    }
-                    if(atual[i,j].Equals(chB)){
+                    }else if(atual[i,j].Equals(chB)){
                         b+=1;
-                    }
-                    if(atual[i,j].Equals(Types.BISHOP)){
+                    }else if(atual[i,j].Equals(Types.BISHOP)){
                         b-=1;
-                    }
-                    if(atual[i,j].Equals(chR)){
+                    }else if(atual[i,j].Equals(chR)){
                         t+=1;
-                    }
-                    if(atual[i,j].Equals(Types.ROOK)){
+                    }else if(atual[i,j].Equals(Types.ROOK)){
                         t-=1;
-                    }
-                    if(atual[i,j].Equals(chQ)){
+                    }else if(atual[i,j].Equals(chQ)){
                         q+=1;
-                    }
-                    if(atual[i,j].Equals(Types.QUEEN)){
+                    }else if(atual[i,j].Equals(Types.QUEEN)){
                         q-=1;
                     }
                 }
@@ -325,8 +307,8 @@ namespace MiniChess
             
             int util = evalSimples(state.board);
 
-            if(gameIsOver(state))
-                util += getWinner(state) == 1 ? -100 : 100;
+            if(state.gameIsOver())
+                util += getWinner(state) < 2 ? -100 : 100;
 
             return (int) util/state.playsCount;
         }

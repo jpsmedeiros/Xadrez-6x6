@@ -33,6 +33,12 @@ namespace TypesNS
         public static char getPlayer1Piece(char piece){
             return Char.ToUpper(piece);
         }
+        public static char getPlayerXPiece(char piece, int player){
+            if (player == 1)
+                return getPlayer1Piece(piece);
+            else
+                return getPlayer2Piece(piece);
+        }
         public static int getPiecePlayer(char piece){
             return isPlayer1(piece) ? 1 : 2;
         }
