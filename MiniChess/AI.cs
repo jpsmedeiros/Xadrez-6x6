@@ -206,74 +206,37 @@ namespace AINS
 
         //função de avaliação simples
         public static int evalMaterial(State state){
-            int p=0, b=0, t=0, q=0;
-            int eval = 0;
-
-            switch(Program.getCurrentPlayer()){
-                case 1:
-                    for(int i=0; i<6; i++){
-                        for(int j=0; j<6; j++){
-                            switch(state.board[i,j]){
-                                case 'p':
-                                    p-=1;
-                                    break;
-                                case 'P':
-                                    p+=1;
-                                    break;
-                                case 'b':
-                                    b-=1;
-                                    break;
-                                case 'B':
-                                    b+=1;
-                                    break;
-                                case 't':
-                                    t-=1;
-                                    break;
-                                case 'T':
-                                    t+=1;
-                                    break;
-                                case 'q':
-                                    q-=1;
-                                    break;
-                                case 'Q':
-                                    q+=1;
-                                    break;
-                            }
-                        }
+            int p=0, b=0, t=0, q=0, eval=0;
+            
+            for(int i=0; i<6; i++){
+                for(int j=0; j<6; j++){
+                    switch(state.board[i,j]){
+                        case Types.PAWN2:
+                            p-= Program.getCurrentPlayer() == 1 ? 1 : -1;
+                            break;
+                        case Types.PAWN:
+                            p+= Program.getCurrentPlayer() == 1 ? 1 : -1;
+                            break;
+                        case Types.BISHOP2:
+                            b-= Program.getCurrentPlayer() == 1 ? 1 : -1;
+                            break;
+                        case Types.BISHOP:
+                            b+= Program.getCurrentPlayer() == 1 ? 1 : -1;
+                            break;
+                        case Types.ROOK2:
+                            t-= Program.getCurrentPlayer() == 1 ? 1 : -1;
+                            break;
+                        case Types.ROOK:
+                            t+= Program.getCurrentPlayer() == 1 ? 1 : -1;
+                            break;
+                        case Types.QUEEN2:
+                            q-= Program.getCurrentPlayer() == 1 ? 1 : -1;
+                            break;
+                        case Types.QUEEN:
+                            q+= Program.getCurrentPlayer() == 1 ? 1 : -1;
+                            break;
                     }
-                    break;
-                case 2:
-                    for(int i=0; i<6; i++){
-                        for(int j=0; j<6; j++){
-                            switch(state.board[i,j]){
-                                case 'p':
-                                    p+=1;
-                                    break;
-                                case 'P':
-                                    p-=1;
-                                    break;
-                                case 'b':
-                                    b+=1;
-                                    break;
-                                case 'B':
-                                    b-=1;
-                                    break;
-                                case 't':
-                                    t+=1;
-                                    break;
-                                case 'T':
-                                    t-=1;
-                                    break;
-                                case 'q':
-                                    q+=1;
-                                    break;
-                                case 'Q':
-                                    q-=1;
-                                    break;
-                            }
-                        }
-                    }
-                    break;
+                }
             }
             eval = p + 3*b + 5*t + 9*q;
             return eval;
@@ -294,30 +257,20 @@ namespace AINS
             util = evalMaterial(state);
             winner = Program.getWinner(state);
             if((Program.getCurrentPlayer())==1){
-                if(winner==1){
-                    util += 100;
-                }                        
-                else{
-                    util -= 100;
-                }
+                util += winner < 2 ? -100 : 100;
             }
             else{
-                if(winner==2){
-                    util += 100;
-                }
-                else{
-                    util -= 100;
-                }
+                util += winner == 2 ? 100 : -100;
             }
                
             util += p + 3*b + 5*t + 9*q;
-            util = util/(state.playsCount);
+            util = (int) util/(state.playsCount);
             return util;
         }
     
         public static int eval2(State state){
             int c1=25, c2=35, c3=40;
-            return ( (c1*evalCenterControl(state)) + (c2*evalMaterial(state)) + (c3*evalMobility(state)) )/100; 
+            return (int)( (c1*evalCenterControl(state)) + (c2*evalMaterial(state)) + (c3*evalMobility(state)) )/100; 
         }
     }
 }
