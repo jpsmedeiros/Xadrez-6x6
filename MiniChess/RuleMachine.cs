@@ -273,7 +273,7 @@ namespace RuleMachineNS
             char piece = board[coordinates[2], coordinates[3]];
             return !Types.isEmpty(piece);
         }
-        public static LinkedList<int[]> possible_moves(State state, char checkKingAttackPiece = 'X'){
+        public static LinkedList<int[]> possible_moves(State state){
             LinkedList<int[]> moves = new LinkedList<int[]>();
             char currentPiece;
             int[] currentMove = new int[4];
@@ -295,18 +295,10 @@ namespace RuleMachineNS
                     if(Types.isPlayerX(currentPiece, state.currentPlayer)){//é peça do jogador
                         for(lin2 = 0; lin2 < size ; lin2++){//verifica para todas as casas do tabuleiro se um movimento para aquela casa é válido
                             for(col2 = 0; col2 < size; col2++){
-                                bool isCheckAttack = false;
                                 contador++;
                                 currentMove = fillMove(currentMove, lin1, col1, lin2, col2);
 
-                                if (checkKingAttackPiece != 'X'){
-                                    isCheckAttack = state.board[currentMove[2], currentMove[3]] == checkKingAttackPiece;
-                                    if (isCheckAttack && validateMove(currentMove, state.board, state.currentPlayer)){
-                                        LinkedList<int[]> check_only_moves = new LinkedList<int[]>();
-                                        check_only_moves.AddLast(currentMove);
-                                        return check_only_moves;
-                                    }
-                                }else if(validateMove(currentMove, state.board, state.currentPlayer)){//movimento é válido
+                                if(validateMove(currentMove, state.board, state.currentPlayer)){//movimento é válido
                                     moves.AddLast(currentMove);//coloca na lista de movimentos válidos
                                     contador2++;
                                 }
