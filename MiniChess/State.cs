@@ -51,6 +51,11 @@ namespace StateNS
             return this.playsWithoutCapture >= 15;
         }
 
+        public int getOpponent(){            
+            if (this.currentPlayer == 1) return 2;
+            else return 1;
+        }
+
         public static State result(State oldState, int[] action){
             State newState = new State(oldState.board, oldState.currentPlayer, oldState.lastMove, oldState.playsCount, oldState.playsWithoutCapture);
             

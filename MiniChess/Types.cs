@@ -24,8 +24,10 @@ namespace TypesNS
             return Char.IsLower(piece);
         }
         public static bool isPlayerX(char piece, int player){
-            if(player == 1)
-                return isPlayer1(piece);
+            if (piece == Types.EMPTY) return false;
+
+            if(player == 1) return isPlayer1(piece);
+            
             return isPlayer2(piece);
         }
         public static bool isEmpty(char piece){

@@ -93,7 +93,6 @@ namespace MiniChess
                         input = ia1.play(currentState);
                     }
                 }else{// IA vs IA => sempre chama a IA
-                    //TODO
                     Console.WriteLine("Esperando input da IA " + currentState.currentPlayer +"...");
                     //CHAMA A IA
                     //input = callIAAction(...);

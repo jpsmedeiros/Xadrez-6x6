@@ -204,7 +204,6 @@ namespace AINS
             return count;
         }   
 
-
         //função de avaliação simples
         public static int evalMaterial(State state){
             int p=0, b=0, t=0, q=0, eval=0;
@@ -244,7 +243,7 @@ namespace AINS
         }
 
         public bool cutoff_test(State state){
-            return state.playsCount - Program.currentState.playsCount > 5;
+            return state.playsCount - Program.currentState.playsCount > 4;
         }
         //funcao de avaliacao usando material e quantidade de jogadas
         public static int eval1(State state){
