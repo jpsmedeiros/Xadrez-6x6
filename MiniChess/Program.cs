@@ -93,7 +93,6 @@ namespace MiniChess
                         input = ia1.play(currentState);
                     }
                 }else{// IA vs IA => sempre chama a IA
-                    //TODO
                     Console.WriteLine("Esperando input da IA " + currentState.currentPlayer +"...");
                     //CHAMA A IA
                     //input = callIAAction(...);
@@ -293,10 +292,6 @@ namespace MiniChess
         }
         public static int evalSimples(char[,] atual){
             int p=0, b=0, t=0, q=0;
-            //int k=0;
-            //char[,] board = new char[6, 6];
-            //board = State.board;
-            //Types comp = new Types();
             char chP = Char.ToLower(Types.PAWN);
             char chB = Char.ToLower(Types.BISHOP);
             char chR = Char.ToLower(Types.ROOK);
