@@ -35,7 +35,7 @@ namespace MiniChess
                 movementInterface();
                 //printBoard();
 
-                Console.WriteLine("Eval: " + evalSimples(currentState.board));
+                Console.WriteLine("Eval: " + AI.eval(currentState));
 
                 if (currentState.gameIsOver()){
                     printBoard();
@@ -338,3 +338,4 @@ namespace MiniChess
         }
     }
 }
+
