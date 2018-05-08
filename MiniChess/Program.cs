@@ -11,8 +11,12 @@ namespace MiniChess
         private static bool game;
         public static int gameMode = 1; // default = 1: Player vs Player
         public static State currentState;
-        public static bool messageHandlerActive = true;
+        private static bool messageHandlerActive = true;
         public static Types types = new Types();
+
+        public static Guid messageHandlerKey;
+
+        public static bool messageHandlerKeyBlock = false;
 
         public static AI ia1 = new AI(2,2);
         public static AI ia2 = new AI(1,2);
@@ -27,7 +31,9 @@ namespace MiniChess
             // game loop
             while(game){
                 printBoard();                
+                //RuleMachine.possible_moves(currentState);
                 movementInterface();
+                //printBoard();
 
                 Console.WriteLine("Eval: " + evalSimples(currentState.board));
 
@@ -43,6 +49,7 @@ namespace MiniChess
             char[,] new_board = initializeBoard();
             int initialPlayer = 1;
             currentState = new State(new_board, initialPlayer, null, 0);
+            //Console.Clear();
             game = true;
         }
 
@@ -103,7 +110,6 @@ namespace MiniChess
                 input = Console.ReadLine();
             }while(handleModeInput(input));
         }
-
         public static bool handleModeInput(string input){
             try{
                 int option = Int32.Parse(input);
@@ -136,7 +142,7 @@ namespace MiniChess
                     case 1:
                         return false;
                     case 2:
-                        modeInterface();
+                        modeInterface();//modo de jogo
                         return true;
                     case 3:
                         Console.WriteLine("Bem vindo ao Xadrez 6x6\nPara movimentar sua peça digite seu movimento no formato: x1 y1 x2 y2\n"+
@@ -158,6 +164,7 @@ namespace MiniChess
             
         }
         public static bool handleMovementInput(String input){
+            //TODO Verificar se formato da string está incorreto
             string[] answer;
             answer = input.Split(" ");
             if(answer.Length < 4){
@@ -175,7 +182,7 @@ namespace MiniChess
             if(!RuleMachine.validateMove(coordinates, currentState.board, currentState.currentPlayer)){
                 return true;
             }
-
+            //Console.WriteLine(RuleMachine.isCheck(currentState.board, currentState.currentPlayer, coordinates));
             movePiece(coordinates);
             return false;
         }
@@ -189,7 +196,7 @@ namespace MiniChess
             currentState = State.result(currentState, coordinates);
         }
 
-        public static char[,] fillBoardPieces(char[,] board){
+        public static char[,] fillBoardPieces(char[,] board){//prenche as peças nas suas posições iniciais do jogo
             int lin, col;
             int tamanho = board.GetLength(0);
             lin = 1;
@@ -201,8 +208,8 @@ namespace MiniChess
                 board[lin, col] = Types.getPlayer2Piece(Types.PAWN);
             }
             //Jogador 1
-            board[0, 0] = board[0, 5] = Types.ROOK;
-            board[0, 1] = board[0, 4] = Types.BISHOP;
+            board[0, 0] = board[0, 5] = Types.ROOK; // TORRE
+            board[0, 1] = board[0, 4] = Types.BISHOP; // BISPO
             board[0, 2] = Types.QUEEN;
             board[0, 3] = Types.KING;
             //Jogador 2
@@ -238,15 +245,27 @@ namespace MiniChess
             return currentState.currentPlayer;
         }
         public static void messageHandler(String msg){
-            if(false){
+            if(messageHandlerActive){
                 Console.WriteLine(msg);
             }
         }
 
+        public static void activateMessaHandler(Guid key){
+            if(key.CompareTo(messageHandlerKey) == 0){
+                messageHandlerActive = true;
+                messageHandlerKeyBlock = false;
+            }
+        }
+        public static void deactivateMessaHandler(Guid key){
+            if(!messageHandlerKeyBlock){
+                messageHandlerKey = key;
+                messageHandlerKeyBlock = true;
+            }
+            messageHandlerActive = false;
+        }
         public static void activateOrDeactivateMessageHandler(){
             messageHandlerActive = !messageHandlerActive;
         }
-
         public static void changeCurrentPlayer(){
             currentState.currentPlayer = currentState.currentPlayer == 1 ? 2 : 1;
             return;
@@ -274,6 +293,10 @@ namespace MiniChess
         }
         public static int evalSimples(char[,] atual){
             int p=0, b=0, t=0, q=0;
+            //int k=0;
+            //char[,] board = new char[6, 6];
+            //board = State.board;
+            //Types comp = new Types();
             char chP = Char.ToLower(Types.PAWN);
             char chB = Char.ToLower(Types.BISHOP);
             char chR = Char.ToLower(Types.ROOK);
@@ -302,6 +325,7 @@ namespace MiniChess
             int eval = p + 3*b + 5*t + 9*q;
             return eval;
         }
+<<<<<<< HEAD
         public static int evalUtility(State state){
             if(state.checkDraw()) return 0;
             
@@ -313,5 +337,7 @@ namespace MiniChess
             return (int) util/state.playsCount;
         }
             
+=======
+>>>>>>> ce793765bdacef15130cf5b550b56b65bcbd1010
     }
 }

@@ -18,7 +18,6 @@ namespace RuleMachineNS
                 }
             }
             char piece = board[coordinates[0], coordinates[1]];
-            //Console.WriteLine("PEÇA SENDO AVALIADA: "+ piece);
             if(Types.isEmpty(piece)){
                 Program.messageHandler("Casa vazia, tente selecionar outra casa");
                 return false;
@@ -28,10 +27,10 @@ namespace RuleMachineNS
                 return false;
             }
             char destination = board[coordinates[2], coordinates[3]];
-            /**if(Types.isPlayerX(destination, currentPlayer)){
+            if(Types.isPlayerX(destination, currentPlayer)){
                 Program.messageHandler("Peça pertence ao jogador atual, não pode capturar");
                 return false;
-            }**/
+            }
             if((coordinates[0] == coordinates[2]) && coordinates[1] == coordinates[3]){
                 Program.messageHandler("Você deve movimentar a peça para uma posição diferente da atual");
                 return false;
@@ -76,6 +75,7 @@ namespace RuleMachineNS
                     return false;
                 }else if(checkResult == 2){
                     int otherPlayer = currentPlayer == 1 ? 2 : 1;
+                    Program.messageHandler("Rei do jogador "+otherPlayer+" está em xeque");
                 }
             }
             return result;
@@ -120,20 +120,19 @@ namespace RuleMachineNS
             return false;//TODO*/
         }
         public static bool isValidHorizontalVertical(char piece, int[] coordinates, char[,] board, string pieceName){
-            int lin,col;
             int linInicial, colInicial, linFinal, colFinal;
             int moveOne;
             linInicial = coordinates[0];
             colInicial = coordinates[1];
             linFinal = coordinates[2];
             colFinal = coordinates[3];
-
             if((linInicial < linFinal) || (colInicial < colFinal)){
                 moveOne = 1;
             }else{
                 moveOne = -1;
             }
             if(linInicial != linFinal){
+                int lin;
                 for(lin = linInicial+moveOne; lin != linFinal+moveOne; lin=lin+moveOne){
                     char currentPiece = board[lin, colInicial];
                     if(!Types.isEmpty(currentPiece) && (lin != linFinal)){
@@ -144,6 +143,7 @@ namespace RuleMachineNS
                 return true;
             }
             if(colInicial != colFinal){
+                int col;
                 for(col = colInicial+moveOne; col != colFinal+moveOne; col=col+moveOne){
                     char currentPiece = board[linInicial, col];
                     if(!Types.isEmpty(currentPiece) && (col != colFinal)){
@@ -175,46 +175,35 @@ namespace RuleMachineNS
             return isValidHorizontalVertical(piece, coordinates, board, name);
         }
         public static bool isValidDiagonal(char piece, int[] coordinates, char[,] board, string pieceName){
-            int lin,col;
             int linInicial, colInicial, linFinal, colFinal;
-            int moveX, moveY;
             linInicial = coordinates[0];
             colInicial = coordinates[1];
             linFinal = coordinates[2];
             colFinal = coordinates[3];
+            int distY = Math.Abs(linFinal - linInicial);
+            int distX = Math.Abs(colFinal - colInicial);
 
-            if(linInicial < linFinal){
-                moveX = 1;
-                if(colInicial < colFinal) moveY = 1;
-                else moveY = -1;
-            } else{
-                moveX = -1;
-                if(colInicial < colFinal) moveY = 1;
-                else moveY = -1;
+            if(distY - distX != 0){
+                Program.messageHandler("Movimento inválido, é necessário que seja na diagonal.");
+                return false; //checa se não está na diagonal
             }
+            Program.messageHandler("Distância igual.");
+            int moveX = (colFinal - colInicial);
+            moveX = moveX/distX;
+            int moveY = (linFinal - linInicial);
+            moveY = moveY/distY;
 
-            int auxX = 0, auxY = 0;
-            lin = linInicial;
-            col = colInicial;
-            while(true){
-                lin += moveX;
-                if(lin != linFinal) auxX++;
-                col += moveY;
-                if(col != colFinal) auxY++;
-                if((lin == linFinal) && (col == colFinal)) return true;
-                if((lin == linFinal) || (col == colFinal)){
-                    Program.messageHandler("Movimento inválido para "+pieceName+". São permitidos somente movimentos nas diagonais.");
-                    return false;
-                }
+            int lin = linInicial, col = colInicial, i;
+            for(i = 0; i < distX; i++){
+                lin += moveY;
+                col += moveX;
                 char currentPiece = board[lin, col];
                 if(!Types.isEmpty(currentPiece) && ((col != colFinal) || (lin != linFinal))){
                     Program.messageHandler("Movimento inválido para "+pieceName+". Existe outra peça no caminho.");
                     return false;
                 }
             }
-
-            //Program.messageHandler("ERRO: Movimento inválido para "+pieceName+". MOVIMENTO NÃO TRATADO.");
-            //return false;//TODO
+            return true;
         }
         public static bool isValidForBishop(char piece, int[] coordinates, char[,] board, int currentPlayer){
             /*
@@ -227,12 +216,10 @@ namespace RuleMachineNS
             colInicial = coordinates[1];
             linFinal = coordinates[2];
             colFinal = coordinates[3];
-
             if((linInicial == linFinal) || (colInicial == colFinal)){
                 Program.messageHandler("Movimento inválido para o Bispo. São permitidos somente movimentos nas diagonais.");
                 return false;
             }
-
             string name = "o Bispo";
             return isValidDiagonal(piece, coordinates, board, name);
         }
@@ -286,21 +273,17 @@ namespace RuleMachineNS
             */
             currentMove = fillMove(currentMove, -1, -1, -1, -1);
             size = state.board.GetLength(0);
-            int contador = 0;
-            int contador2 = 0;
-            Program.activateOrDeactivateMessageHandler();
+            Guid key = Guid.NewGuid();
+            Program.deactivateMessaHandler(key);
             for(lin1 = 0 ; lin1 < size ; lin1++){//pega todas as peças do jogador
                 for(col1 = 0; col1 < size; col1++){
                     currentPiece = state.board[lin1, col1];
                     if(Types.isPlayerX(currentPiece, state.currentPlayer)){//é peça do jogador
                         for(lin2 = 0; lin2 < size ; lin2++){//verifica para todas as casas do tabuleiro se um movimento para aquela casa é válido
-                            for(col2 = 0; col2 < size; col2++){
-                                contador++;
+                            for(col2 = 0; col2 < size ; col2++){
                                 currentMove = fillMove(currentMove, lin1, col1, lin2, col2);
-
                                 if(validateMove(currentMove, state.board, state.currentPlayer)){//movimento é válido
                                     moves.AddLast(currentMove);//coloca na lista de movimentos válidos
-                                    contador2++;
                                 }
                                 currentMove = fillMove(currentMove, -1, -1, -1, -1);//reseta
                             }
@@ -308,7 +291,7 @@ namespace RuleMachineNS
                     }
                 }
             }
-            Program.activateOrDeactivateMessageHandler();
+            Program.activateMessaHandler(key);
             
             return moves;
         }
@@ -334,7 +317,7 @@ namespace RuleMachineNS
             State state = new State(board, otherPlayer, null, 0);
             if(move != null){//sigfica que quero avaliar um movimento
                 state.board[move[2], move[3]] = board[move[0], move[1]];//cria tabuleiro futuro a partir de movimento
-                state.board[move[0], move[1]] = Types.EMPTY;
+                state.board[move[0], move[1]] = Types.EMPTY; // PROBLEMA AQUI colocar o 0 está fazendo mostrar mensagem de xeque indevidamente
             }//se move == null significa que quero saber se o estado atual está em xeque
             int[] kingPositionCurrentPlayer = findKingX(state.board, currentPlayer);
             int[] kingPositionOtherPlayer   = findKingX(state.board, otherPlayer);
@@ -356,7 +339,17 @@ namespace RuleMachineNS
             }
             return 0;
         }
-        
+        public static bool isCheckmate(State state){
+            LinkedList<int[]> possibleMoves = possible_moves(state);
+            foreach(int[] possibleMove in possibleMoves){
+                if(isCheck(state.board, state.currentPlayer, possibleMove) != 1){//se movimento possibleMove não leva xeque do meu rei(=1)
+                    return false;
+                }
+            }
+            return true;
+        }
+        /*ver se é cheque mate, eu pego todos os movimentos possíveis do jogador que está com o rei sob xeque e vejo se todos deles o inCheck(...) 
+        retorna verdadeiro, se para todos os movimentos possíveis do jogador ele ainda estiver em xeque, é xeque mate */
         public static int[] findKingX(char[,] board, int currentPlayer){
             int[] position = new int[2];
             int lin, col, size;
