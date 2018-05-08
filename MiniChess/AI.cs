@@ -280,7 +280,7 @@ namespace AINS
         }
 
         public bool cutoff_test(State state){
-            return state.playsCount - Program.currentState.playsCount > 5;
+            return state.playsCount - Program.currentState.playsCount > 4;
         }
         //funcao de avaliacao usando material e quantidade de jogadas
         public static int eval1(State state){
