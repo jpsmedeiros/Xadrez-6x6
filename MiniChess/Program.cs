@@ -274,10 +274,6 @@ namespace MiniChess
             Program.messageHandler("Peça capturada na Linha: "+coordinates[2]+" Coluna: "+coordinates[3]+" Peça capturada: "+board[coordinates[2], coordinates[3]]);
         }
 
-        public static char player2Piece(char piece){
-            return Char.ToLower(piece);
-        }
-
         // retorna -1 se o jogo não tiver ganhador ainda
         public static int getWinner(State state){
             if (state.gameIsOver() && !state.checkDraw()){
