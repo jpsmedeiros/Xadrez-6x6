@@ -111,9 +111,6 @@ namespace RuleMachineNS
             string name = "a Rainha";
             if((linInicial != linFinal) && (colInicial != colFinal)) return isValidDiagonal(piece, coordinates, board, name);
             else return isValidHorizontalVertical(piece, coordinates, board, name);
-            /*
-            Program.messageHandler("ERRO: Movimento inválido para a Rainha. MOVIMENTO NÃO TRATADO.");
-            return false;//TODO*/
         }
         public static bool isValidHorizontalVertical(char piece, int[] coordinates, char[,] board, string pieceName){
             int linInicial, colInicial, linFinal, colFinal;

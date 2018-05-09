@@ -18,8 +18,8 @@ namespace MiniChess
 
         public static bool messageHandlerKeyBlock = false;
 
-        public static AI ia1 = new AI(2,2);
-        public static AI ia2 = new AI(1,2);
+        public static AI ia1 = new AI(1,1);
+        public static AI ia2 = new AI(2,2);
     
         
         static void Main(string[] args)
@@ -31,9 +31,7 @@ namespace MiniChess
             // game loop
             while(game){
                 printBoard();                
-                //RuleMachine.possible_moves(currentState);
                 movementInterface();
-                //printBoard();
 
                 Console.WriteLine("Eval: " + AI.eval1(currentState));
 
@@ -49,7 +47,6 @@ namespace MiniChess
             char[,] new_board = initializeBoard();
             int initialPlayer = 1;
             currentState = new State(new_board, initialPlayer, null, 0);
-            //Console.Clear();
             game = true;
         }
 
@@ -87,7 +84,6 @@ namespace MiniChess
                         Console.WriteLine("Movimente sua peça:\n");
                         input = Console.ReadLine();
                     }else{
-                        //TODO
                         Console.WriteLine("Esperando input da IA...");
                         //CHAMA A IA
                         input = ia1.play(currentState);
@@ -95,8 +91,9 @@ namespace MiniChess
                 }else{// IA vs IA => sempre chama a IA
                     Console.WriteLine("Esperando input da IA " + currentState.currentPlayer +"...");
                     //CHAMA A IA
-                    //input = callIAAction(...);
-                    input = "0 0 0 0";//Só para tirar o erro
+                    input = "0 0 0 0";
+                    if (currentState.currentPlayer == 1) input = ia1.play(currentState);
+                    else input = ia2.play(currentState);
                 }
 
             }while(handleMovementInput(input));
@@ -149,7 +146,6 @@ namespace MiniChess
                          "as coordenadas finais.\n\nBom jogo!\n\n");
                         return true;
                     case 4:
-                        Console.WriteLine("TODO");
                         return true;
                     case 5:
                         game = false;
@@ -163,7 +159,6 @@ namespace MiniChess
             
         }
         public static bool handleMovementInput(String input){
-            //TODO Verificar se formato da string está incorreto
             string[] answer;
             answer = input.Split(" ");
             if(answer.Length < 4){
@@ -178,10 +173,12 @@ namespace MiniChess
             }catch(System.FormatException){
                 Console.WriteLine("Movimento em formato incorreto, tente digitar apenas números separados por espaços\n");
             }
+
             if(!RuleMachine.validateMove(coordinates, currentState.board, currentState.currentPlayer)){
+
                 return true;
             }
-            //Console.WriteLine(RuleMachine.isCheck(currentState.board, currentState.currentPlayer, coordinates));
+
             movePiece(coordinates);
             return false;
         }
@@ -195,7 +192,8 @@ namespace MiniChess
             currentState = State.result(currentState, coordinates);
         }
 
-        public static char[,] fillBoardPieces(char[,] board){//prenche as peças nas suas posições iniciais do jogo
+        //prenche as peças nas suas posições iniciais do jogo
+        public static char[,] fillBoardPieces(char[,] board){
             int lin, col;
             int tamanho = board.GetLength(0);
             lin = 1;
@@ -207,8 +205,8 @@ namespace MiniChess
                 board[lin, col] = Types.getPlayer2Piece(Types.PAWN);
             }
             //Jogador 1
-            board[0, 0] = board[0, 5] = Types.ROOK; // TORRE
-            board[0, 1] = board[0, 4] = Types.BISHOP; // BISPO
+            board[0, 0] = board[0, 5] = Types.ROOK;
+            board[0, 1] = board[0, 4] = Types.BISHOP;
             board[0, 2] = Types.QUEEN;
             board[0, 3] = Types.KING;
             //Jogador 2

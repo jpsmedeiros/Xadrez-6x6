@@ -30,10 +30,6 @@ namespace AINS
         }
 
         public int[] alpha_beta_search(State state){
-            //if(Program.gameIsOver(state)){
-            //    Console.WriteLine($"A IA jogador:{this.playerId} está tentando jogar depois do jogo ter terminado");
-            //    return null;
-            //}
 
             int v    = Int32.MinValue;
             int alfa = Int32.MinValue;
@@ -133,20 +129,10 @@ namespace AINS
             }
         }
 
-        //Utility avalia apenas estados terminais
-        //public int utility(State state){
-        //    if(state.currentPlayer == playerId){
-        //        return Int32.MinValue;
-        //    }
-        //    else{
-        //        return Int32.MaxValue;
-        //    }
-        //}
-
         public bool cut(State state){
            switch(this.type){
                case 1:
-                   return false;
+                   return cutoff_test(state);
                case 2:
                    return cutoff_test(state);
                default:
@@ -154,17 +140,6 @@ namespace AINS
            }
         }
 
-        //função de avaliação sobre a segurança do rei
-        public static int evalKingSafety(State state){
-            for(int i=-1; i<=1; i++){
-                for(int j=-1; j<=1; j++){
-                    //TODO
-                    //isCheck
-                    //RuleMachine.isValidForPiece();
-                }
-            }
-            return 0;
-        }
         //função de avaliação sobre a quantidade de movimentos possiveis
         //retorna a qtd de movimentos possiveis
         public static int evalMobility(State state){
@@ -251,17 +226,13 @@ namespace AINS
                 return 0;
             }
 
-            int p=0, b=0, t=0, q=0;
-            int util=0, winner=-1;
+            int p=0, b=0, t=0, q=0, util=0, winner=-1;
             
             util = evalMaterial(state);
             winner = Program.getWinner(state);
-            if((Program.getCurrentPlayer())==1){
-                util += winner < 2 ? -100 : 100;
-            }
-            else{
-                util += winner == 2 ? 100 : -100;
-            }
+
+            if((Program.getCurrentPlayer())==1) util += winner < 2 ? -100 : 100;
+            else util += winner == 2 ? 100 : -100;
                
             util += p + 3*b + 5*t + 9*q;
             util = (int) util/(state.playsCount);
